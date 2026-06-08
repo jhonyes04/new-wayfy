@@ -72,7 +72,7 @@ def handle_signup():
 
     new_user = User(
         email=body["email"],
-        full_name=body["full_name"],
+        fullname=body["fullname"],
         mobility_phase=body["mobility_phase"],
         password=hashed_password.decode('utf-8'),
         is_active=True
