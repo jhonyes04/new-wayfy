@@ -19,9 +19,10 @@ flask-jwt-extended = "==4.6.0"
 wtforms = "==3.1.2"
 sqlalchemy = "*"
 python-dotenv = "*"
-flask-cors = "*"
 groq = "*"
 bcrypt = "*"
+flask-cors = "*"
+flask-bcrypt = "*"
 
 [requires]
 python_version = "3.13"
