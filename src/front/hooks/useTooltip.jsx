@@ -1,3 +1,4 @@
+import { Tooltip } from 'bootstrap/dist/js/bootstrap.bundle.min';
 import { useEffect, useRef } from 'react';
 
 const useTooltip = ({ title, placement = 'bottom', trigger = 'hover' }) => {
@@ -6,7 +7,7 @@ const useTooltip = ({ title, placement = 'bottom', trigger = 'hover' }) => {
     useEffect(() => {
         if (!ref.current) return;
 
-        const tooltip = new window.bootstrap.Tooltip(ref.current, {
+        const tooltip = new Tooltip(ref.current, {
             title,
             placement,
             trigger,

@@ -14,19 +14,8 @@
 		"preview": "vite preview"
 	},
 	"author": {
-		"name": "Alejandro Sanchez",
-		"url": "http://alesanchezr.com/"
+		"name": "Juan Manuel España Redondo"
 	},
-	"contributors": [
-		{
-			"name": "Alejandro Sanchez",
-			"url": "http://alesanchezr.com/"
-		},
-		{
-			"name": "Ignacio Cordoba",
-			"url": "http://github.com/nachovz"
-		}
-	],
 	"license": "ISC",
 	"devDependencies": {
 		"@types/react": "^18.2.18",
@@ -36,6 +25,7 @@
 		"eslint-plugin-react": "^7.33.1",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"eslint-plugin-react-refresh": "^0.4.3",
+		"sass": "^1.100.0",
 		"vite": "^4.4.8"
 	},
 	"babel": {
@@ -61,6 +51,7 @@
 		"@geoapify/react-geocoder-autocomplete": "^2.0.1",
 		"@mapbox/search-js-react": "^1.5.1",
 		"@tanstack/react-hotkeys": "^0.9.1",
+		"bootstrap": "^5.3.8",
 		"date-fns": "^4.1.0",
 		"dotenv": "^17.4.2",
 		"mapbox-gl": "^3.21.0",
@@ -68,6 +59,7 @@
 		"prop-types": "^15.8.1",
 		"react": "^18.2.0",
 		"react-big-calendar": "^1.19.4",
+		"react-bootstrap": "^2.10.10",
 		"react-dnd": "^16.0.1",
 		"react-dnd-html5-backend": "^16.0.1",
 		"react-dom": "^18.2.0",

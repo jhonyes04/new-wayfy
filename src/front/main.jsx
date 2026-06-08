@@ -1,36 +1,22 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './index.css'  // Global styles for your application
-import './theme/theme-hc.css'
-import { RouterProvider } from "react-router-dom";  // Import RouterProvider to use the router
-import { router } from "./routes";  // Import the router configuration
-import { StoreProvider } from './hooks/useGlobalReducer';  // Import the StoreProvider for global state management
-import { BackendURL } from './components/BackendURL';
-import { ThemeProvider } from './context/ThemeContext';
-import { HotkeysProvider } from '@tanstack/react-hotkeys';
+import './index.css'
+import { RouterProvider } from "react-router-dom";
+import { router } from "../front/routes/routes";
+import { StoreProvider } from './context/store/StoreProvider';
+import { AuthProvider } from './context/auth/AuthContext'
 
 
 const Main = () => {
-
-    // if(! import.meta.env.VITE_BACKEND_URL ||  import.meta.env.VITE_BACKEND_URL == "") return (
-    //     <React.StrictMode>
-    //           <BackendURL/ >
-    //     </React.StrictMode>
-    //     );
     return (
         <React.StrictMode>
-            {/* Provide global state to all components */}
-            <HotkeysProvider>
-                <ThemeProvider>
-                    <StoreProvider>
-                        {/* Set up routing for the application */}
-                        <RouterProvider router={router} />
-                    </StoreProvider>
-                </ThemeProvider>
-            </HotkeysProvider>
+            <StoreProvider>
+                <AuthProvider>
+                    <RouterProvider router={router} />
+                </AuthProvider>
+            </StoreProvider>
         </React.StrictMode>
     );
 }
 
-// Render the Main component into the root DOM element.
 ReactDOM.createRoot(document.getElementById('root')).render(<Main />)

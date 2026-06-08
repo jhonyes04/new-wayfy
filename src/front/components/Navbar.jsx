@@ -1,107 +1,71 @@
 import urlLogoLight from '../assets/img/logo.png';
-import urlLogoAC from '../assets/img/logo-ac.png'
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search } from './Search';
-import { LoginDropdown } from './LoginDropdown';
+import { Button } from 'react-bootstrap'
 import { ButtonMenu } from './ButtonMenu';
-import { useTheme } from '../context/ThemeContext';
-import { HOTKEYS } from '../hotkeys/config'
+import { UserAvatar } from '../modules/UserDashboard/components/UserAvatar';
 
-import useGlobalReducer from '../hooks/useGlobalReducer';
-import { SettingsDropdown } from './SettingsDropdown/SettingsDropdown';
-
-const { GO_HOME, GO_MAP, GO_HOTELS, GO_RESTAURANTS, GO_TRANSPORTS, GO_ENTERTAINMENT, GO_LOGIN, GO_REGISTER } = HOTKEYS
 
 const menuElements = [
-	{
-		link: '/',
-		label: 'Home',
-		icon: 'fa-home',
-		shortCut: GO_HOME.combo
-	},
-	{
-		link: '/map',
-		label: 'Mapa',
-		icon: 'fa-location-dot',
-		shortCut: GO_MAP.combo
-	},
-	{
-		link: '/hotels',
-		label: 'Hoteles',
-		icon: 'fa-hotel',
-		shortCut: GO_HOTELS.combo
-	},
-	{
-		link: '/restaurants',
-		label: 'Restaurantes',
-		icon: 'fa-utensils',
-		shortCut: GO_RESTAURANTS.combo
-	},
-	{
-		link: '/transports',
-		label: 'Transportes',
-		icon: 'fa-bus',
-		shortCut: GO_TRANSPORTS.combo
-	},
-	{
-		link: '/entertainment',
-		label: 'Entretenimiento',
-		icon: 'fa-star',
-		shortCut: GO_ENTERTAINMENT.combo
-	},
+    { link: '/', label: 'Home', icon: 'fa-home' },
+    { link: '/map', label: 'Mapa', icon: 'fa-location-dot' },
+    { link: '/hotels', label: 'Hoteles', icon: 'fa-hotel' },
+    { link: '/restaurants', label: 'Restaurantes', icon: 'fa-utensils' },
+    { link: '/transports', label: 'Transportes', icon: 'fa-bus' },
+    { link: '/entertainment', label: 'Entretenimiento', icon: 'fa-star' },
 ];
 
 export const Navbar = () => {
-	const [mostrarMenu, setMostrarMenu] = useState(false);
-	const { store } = useGlobalReducer()
-	const { showShortcut } = store
-	const { theme } = useTheme()
+    const [mostrarMenu, setMostrarMenu] = useState(false);
 
-	const urlLogo = theme === 'light' ? urlLogoLight : urlLogoAC
+    return (
+        <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm py-2">
+            <div className="container-fluid container-lg">
+                <Link to={'/'} className="navbar-brand me-2">
+                    <img
+                        src={urlLogoLight}
+                        alt="logo"
+                        width={90}
+                        className="img-fluid"
+                    />
+                </Link>
 
-	return (
-		<nav className="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm">
-			<div className="container">
-				<Link to={'/'} className="navbar-brand m-0">
-					<img
-						src={urlLogo}
-						alt="logo"
-						width={90}
-						className="img-fluid"
-					/>
-				</Link>
+                <button
+                    type="button"
+                    className="navbar-toggler border-0 order-2 ms-2"
+                    onClick={() => setMostrarMenu(!mostrarMenu)}
+                    aria-expanded={mostrarMenu}
+                    aria-label="Toggle navigation"
+                >
+                    <span className="navbar-toggler-icon"></span>
+                </button>
 
-				<div className="d-flex align-items-center border-0 ms-auto order-lg-last gap-3">
-					<LoginDropdown />
-					<div className="d-flex align-self-end">
-						<SettingsDropdown />
-					</div>
-					<button
-						type="button"
-						className="navbar-toggler border-0 order-lg-last ms-2"
-						onClick={() => setMostrarMenu(!mostrarMenu)}
-					>
-						<span className="navbar-toggler-icon"></span>
-					</button>
-				</div>
-				<div
-					className={`collapse navbar-collapse ${mostrarMenu ? 'show' : ''}`}
-					id="navbarContent"
-				>
-					<div className="navbar-nav d-flex flex-row flex-wrap justify-content-center flex-grow-1 gap-3 mt-2 mt-lg-0 me-lg-5">
-						{menuElements.map((element, index) => (
-							<ButtonMenu
-								link={element.link}
-								label={element.label}
-								icon={element.icon}
-								shortCut={element.shortCut}
-								key={index}
-							/>
-						))}
-					</div>
-				</div>
-			</div>
-		</nav>
-	);
+                <div className="d-flex align-items-center gap-2 gap-sm-3 ms-auto order-1 order-lg-3">
+                    <Link to='/login' className="btn btn-secondary btn-circle">
+                        <i className="fa-regular fa-user"></i>
+                    </Link>
+                    <Link to='/user-dashboard' className='text-decoration-none'>
+                        <UserAvatar />
+                    </Link>
+                </div>
+
+                <div
+                    className={`collapse navbar-collapse order-3 order-lg-2 ${mostrarMenu ? 'show' : ''}`}
+                    id="navbarContent"
+                >
+                    {/* Removido flex-row forzado; ahora es vertical en móvil (nav) y horizontal en desktop (lg) */}
+                    <div className="navbar-nav flex-row flex-wrap justify-content-center mx-auto gap-2 gap-lg-4 mt-3 mt-lg-0">
+                        {menuElements.map((element, index) => (
+                            <ButtonMenu
+                                link={element.link}
+                                label={element.label}
+                                icon={element.icon}
+                                key={index}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    );
 };
