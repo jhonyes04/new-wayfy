@@ -16,12 +16,13 @@ class User(db.Model):
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     
     def serialize(self) -> dict:
+        avatar_public_path = '/public/avatar/'
         return {
             'id': self.id,
             'full_name': self.full_name,
             'email': self.email,
             'selected_mobility': json.loads(self.selected_mobility),
-            'avatar': self.avatar,
+            'avatar': f'{avatar_public_path}{self.avatar}',
             'is_active': self.is_active,
             'is_admin': self.is_admin
         }
