@@ -1,9 +1,11 @@
 import json
+import os
 from flask import jsonify
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token
 from sqlalchemy import select
 from api.models import db, User
+from werkzeug.utils import secure_filename
 
 bcrypt = Bcrypt()
 
@@ -74,23 +76,49 @@ class UserController:
         
     
     @staticmethod
-    def update_avatar(current_user_id: str, data: dict):
-        if not data or 'avatar' not in data:
-            return jsonify({'msg': 'URL de avatar requerida'})
+    def update_avatar(current_user_id: str, file_object):
+        ALLOWED_EXTENSIONS = {'png', 'jpg',  'jpeg'}
+        
+        if not file_object or file_object.filename == '':
+            return jsonify({'msg': 'No se ha seleccionado ningún archivo de imagen'}), 400
+        
+        file_extension = file_object.filename.rsplit('.', 1)[-1].lower()
+        
+        if file_extension not in ALLOWED_EXTENSIONS:
+            return jsonify({'msg': 'Formato de imagen no permitido. Usa PNG, JPG o JPEG'}), 400
         
         user = db.session.execute(select(User).filter_by(id=int(current_user_id))).scalar_one_or_none()
         
         if not user:
-            return jsonify({'msg': 'Usuario no encontrado'})
-        
-        user.avatar = data['avatar']
+            return jsonify({'msg': 'Usuario no encontrado'}), 404
         
         try:
+            base_dir = os.path.abspath(os.path.dirname(__file__))
+            public_avatar_dir = os.path.join(base_dir, '../../..', 'public', 'avatar')
+            
+            os.makedirs(public_avatar_dir, exist_ok=True)
+            
+            if user.avatar and 'default_avatar.png' not in user.avatar:
+                old_filename = user.avatar.split('/')[-1]
+                old_file_path = os.path.join(public_avatar_dir, old_filename)
+                
+                if (os.path.exists(old_file_path)):
+                    os.remove(old_file_path)
+                    
+            clean_filename = secure_filename(f'avatar_user_{current_user_id}.{file_extension}')
+            new_file_path = os.path.join(public_avatar_dir, clean_filename)
+            
+            file_object.save(new_file_path)
+            
+            user.avatar = clean_filename
             db.session.commit()
+            
             return jsonify({
-                'msg': 'Avatar actualizado con éxito',
+                'msg': 'Avatar actualizado correctamente',
                 'user': user.serialize()
             }), 200
+        
         except Exception as e:
             db.session.rollback()
-            return jsonify({'msg': 'Error al actualizar el avatar', 'error': str(e)}), 500
+            return jsonify({'msg': 'Error al procesar el reemplazo del archivo', 'error': str(e)}), 500
+        
