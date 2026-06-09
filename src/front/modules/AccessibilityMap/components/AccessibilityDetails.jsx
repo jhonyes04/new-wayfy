@@ -1,12 +1,13 @@
 import { Link } from 'react-router-dom';
 import { translateTag, translateValue, translateCategory, getCategoryIcon } from '../utils/translations/OSM_TRANSLATIONS';
 import useGlobalReducer from '../../../hooks/useGlobalReducer';
+import { useAuth } from '../../../context/auth/AuthContext'
 
 const WHEELCHAIR_LABELS = {
     yes: {
         label: 'Accesible',
         color: 'success',
-        icon: 'fa-wheelchair',
+        icon: 'fa-wheelchair-move',
     },
     limited: {
         label: 'Parcialmente accesible',
@@ -39,7 +40,9 @@ const formatAddress = (tags) => {
 
 export const AccessibilityDetails = ({ feature, onClose }) => {
     const { state, dispatch } = useGlobalReducer()
-    const { places } = state;
+    const { favorites } = state;
+
+    const { user } = useAuth()
 
     if (!feature) return null;
 
@@ -54,19 +57,19 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
 
     const coords = feature.geometry?.coordinates;
 
-    const isAlreadySaved = places?.some((place) => place.id === properties.id);
-    // const isFavorite = favorites?.some((fav) => fav.id === properties.id);
+    // const isAlreadySaved = places?.some((place) => place.id === properties.id);
+    const isFavorite = favorites?.some((favorite) => favorite.id === properties.id);
 
     const wheelchair = WHEELCHAIR_LABELS[properties.wheelchair] || WHEELCHAIR_LABELS.unknown;
 
     const osmUrl = `https://www.openstreetmap.org/${properties.osm_type || 'node'}/${properties.id}`;
 
-    const handleTogglePlace = () => {
-        if (isAlreadySaved) {
-            dispatch({ type: 'REMOVE_PLACE', payload: properties.id });
+    const handleToggleFavorite = () => {
+        if (isFavorite) {
+            dispatch({ type: 'REMOVE_FAVORITE', payload: properties.id });
         } else {
             dispatch({
-                type: 'ADD_PLACE',
+                type: 'ADD_FAVORITE',
                 payload: {
                     id: properties.id,
                     name: properties.name || 'Lugar sin nombre',
@@ -134,7 +137,6 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
 
     return (
         <>
-            {/* CONTENEDOR PRINCIPAL CON POSICIONAMIENTO */}
             <div
                 className="card shadow-lg position-absolute top-50 start-50 translate-middle z-1"
                 style={{
@@ -177,11 +179,13 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                                     {category}
                                 </div>
                             </div>
-                            <i
-                                className={`${isAlreadySaved ? 'fa-solid' : 'fa-regular'} fa-heart text-danger fs-4`}
-                                style={{ cursor: 'pointer' }}
-                                onClick={handleTogglePlace}
-                            ></i>
+                            {user && (
+                                <i
+                                    className={`${isFavorite ? 'fa-solid' : 'fa-regular'} fa-heart text-danger fs-4`}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={handleToggleFavorite}
+                                ></i>
+                            )}
                         </div>
                     </div>
 
@@ -219,10 +223,12 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                         </div>
                     )}
 
-                    <button className="btn btn-sm btn-success fw-bold mt-3 w-100">
-                        <i className="fa-solid fa-pencil me-1"></i>
-                        Editar accesibilidad
-                    </button>
+                    {user && (
+                        <button className="btn btn-sm btn-success fw-bold mt-3 w-100">
+                            <i className="fa-solid fa-pencil me-1"></i>
+                            Editar accesibilidad
+                        </button>
+                    )}
                 </div>
 
                 {/* FOOTER */}

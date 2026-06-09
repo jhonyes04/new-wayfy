@@ -1,46 +1,75 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode'
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(() => localStorage.getItem('wayfy_token'));
+    const [token, setToken] = useState(() => {
+        const t = sessionStorage.getItem('wayfy_token')
+
+        return t && t !== 'undefined' && t !== 'null' ? t : null
+    });
+
+    const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const expiration = localStorage.getItem('wayfy_token_expiration');
+        const expiration = sessionStorage.getItem('wayfy_token_expiration')
 
-        // Verificar si el token existe y si aún es válido
-        if (token && expiration) {
-            const now = new Date().getTime();
-            if (now < parseInt(expiration)) {
-                // El token es válido (puedes guardar aquí más info del usuario si tu backend la dio)
-                setUser({ loggedIn: true });
-            } else {
-                // El token expiró
-                logout();
-            }
+        if (!token || !expiration) {
+            logout()
+            setLoading(false)
+            return
         }
-        setLoading(false);
+
+        const now = Date.now()
+
+        if (now >= Number(expiration)) {
+            logout()
+            setLoading(false)
+            return
+        }
+
+        try {
+            const decoded = jwtDecode(token)
+            setUser(decoded)
+        } catch (error) {
+            logout()
+        }
+
+        setLoading(false)
+
     }, [token]);
 
-    const login = (backendData) => {
-        // backendData debería traer: { token, expiresIn (en segundos o ms), user... }
-        const { token, expiresIn } = backendData;
+    const login = async (email, password) => {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
 
-        // Calcular fecha de expiración absoluta (ahora + tiempo de vida del token)
-        const expirationTime = new Date().getTime() + expiresIn;
+        const data = await response.json();
 
-        localStorage.setItem('wayfy_token', token);
-        localStorage.setItem('wayfy_token_expiration', expirationTime.toString());
+        if (!response.ok) throw new Error(data.msg || 'Error en login');
+
+        const { token, expiresIn } = data;
+
+        const expirationTime = Date.now() + expiresIn * 1000;
+
+        sessionStorage.setItem('wayfy_token', token);
+        sessionStorage.setItem('wayfy_token_expiration', expirationTime.toString());
 
         setToken(token);
-        setUser({ loggedIn: true });
+
+        const decoded = jwtDecode(token)
+        setUser(decoded);
+
+        return decoded;
     };
 
     const logout = () => {
-        localStorage.removeItem('wayfy_token');
-        localStorage.removeItem('wayfy_token_expiration');
+        sessionStorage.removeItem('wayfy_token');
+        sessionStorage.removeItem('wayfy_token_expiration');
         setToken(null);
         setUser(null);
     };
@@ -52,5 +81,4 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-// Hook personalizado para usar el contexto fácilmente
 export const useAuth = () => useContext(AuthContext);

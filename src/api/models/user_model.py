@@ -7,7 +7,8 @@ class User(db.Model):
     __tablename__ = 'users'
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    full_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    firstname: Mapped[str] = mapped_column(String(50), nullable=True)
+    lastname: Mapped[str] = mapped_column(String(100), nullable=True)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     selected_mobility: Mapped[str] = mapped_column(Text, default="[]")
@@ -19,7 +20,8 @@ class User(db.Model):
         avatar_public_path = '/public/avatar/'
         return {
             'id': self.id,
-            'full_name': self.full_name,
+            'firstname': self.firstname,
+            'lastname': self.lastname,
             'email': self.email,
             'selected_mobility': json.loads(self.selected_mobility),
             'avatar': f'{avatar_public_path}{self.avatar}',

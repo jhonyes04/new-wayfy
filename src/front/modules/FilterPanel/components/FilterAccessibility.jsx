@@ -7,7 +7,7 @@ const ACCESSIBILITY_FILTERS = [
         value: 'yes',
         label: 'Total',
         color: 'success',
-        faIcon: 'fa-solid fa-wheelchair',
+        faIcon: 'fa-solid fa-wheelchair-move',
     },
     {
         value: 'limited',

@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Nav, Button, Offcanvas, Card, ProgressBar } from 'react-bootstrap';
 import { UserAvatar } from '../../modules/UserDashboard/components/UserAvatar'
 import useTooltip, { } from '../../hooks/useTooltip'
+import { useAuth } from '../../context/auth/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { SidebarContent } from '../../modules/UserDashboard/components/SidebarContent';
 
 export const PageUserDashboard = () => {
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [activeTab, setActiveTab] = useState('dashboard');
+    const { logout, user } = useAuth()
+    const navigate = useNavigate()
 
     const tooltipRef = useTooltip({
         title: 'Cerrar sesión',
@@ -13,14 +18,6 @@ export const PageUserDashboard = () => {
         trigger: 'hover'
     })
 
-    const user = {
-        name: "Carlos Mendoza",
-        email: "carlos.m@empresa.com",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80",
-        plan: "Usuario Premium"
-    };
-
-    // Mapeo de ítems con clases CSS de FontAwesome v6
     const menuItems = [
         { id: 'dashboard', label: 'Inicio', iconClass: 'fa-chart-pie' },
         { id: 'profile', label: 'Mi Perfil', iconClass: 'fa-user' },
@@ -28,44 +25,35 @@ export const PageUserDashboard = () => {
         { id: 'favorites', label: 'Favoritos', iconClass: 'fa-heart' },
     ];
 
-    const SidebarContent = () => (
-        <div className="d-flex flex-column h-100 p-3 bg-white">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <UserAvatar />
-
-                <i ref={tooltipRef} className="fa-solid fa-right-from-bracket fs-4 text-danger" style={{ cursor: 'pointer' }}></i>
-            </div>
-
-            <Nav className="flex-column flex-grow-1 gap-1">
-                {menuItems.map((item) => {
-                    const isActive = activeTab === item.id;
-                    return (
-                        <Button
-                            key={item.id}
-                            variant={isActive ? 'success' : 'light'}
-                            onClick={() => { setActiveTab(item.id); setShowMobileMenu(false); }}
-                            className={`d-flex align-items-center gap-3 w-100 text-start border-0 px-3 py-2 ${isActive ? '' : 'text-dark bg-transparent'}`}
-                            style={{ borderRadius: '10px' }}
-                        >
-                            <i className={`fa-solid ${item.iconClass} fa-fw fs-5`}></i>
-                            <span className="small fw-medium">{item.label}</span>
-                        </Button>
-                    );
-                })}
-            </Nav>
-        </div>
-    );
+    const handle_logout = () => {
+        logout()
+        navigate('/')
+    }
 
     return (
         <div className="d-flex vw-100 overflow-hidden bg-light">
             {/* IZQUIERDA */}
             <aside className="d-none d-lg-block border-end border-light" style={{ width: '260px', minWidth: '260px' }}>
-                <SidebarContent />
+                <SidebarContent
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    setShowMobileMenu={setShowMobileMenu}
+                    menuItems={menuItems}
+                    handle_logout={handle_logout}
+                    tooltipRef={tooltipRef}
+                />
             </aside>
 
             <Offcanvas show={showMobileMenu} onHide={() => setShowMobileMenu(false)} className="p-0" style={{ width: '260px' }}>
                 <Offcanvas.Body className="p-0">
-                    <SidebarContent />
+                    <SidebarContent
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                        setShowMobileMenu={setShowMobileMenu}
+                        menuItems={menuItems}
+                        handle_logout={handle_logout}
+                        tooltipRef={tooltipRef}
+                    />
                 </Offcanvas.Body>
             </Offcanvas>
 
@@ -118,8 +106,8 @@ export const PageUserDashboard = () => {
                         {activeTab === 'profile' && (
                             <Card className="border-light shadow-sm" style={{ borderRadius: '16px' }}>
                                 <Card.Body className="p-4">
-                                    <h3 className="h5 fw-bold text-dark border-bottom pb-3 mb-3">Información de la Cuenta</h3>
-                                    <p className="text-secondary small mb-2"><strong>Nombre Completo:</strong> {user.name}</p>
+                                    <h3 className="h5 fw-bold text-primary border-bottom pb-3 mb-3">Información de la Cuenta</h3>
+                                    <p className="text-secondary small mb-2"><strong>Nombre Completo:</strong> {user.firstname} {user.lastname}</p>
                                     <p className="text-secondary small mb-0"><strong>Email:</strong> {user.email}</p>
                                 </Card.Body>
                             </Card>

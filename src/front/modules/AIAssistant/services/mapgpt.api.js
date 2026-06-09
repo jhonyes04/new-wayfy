@@ -3,7 +3,7 @@ export const fetchMapData = async (text) => {
 
     try {
         const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/mapgpt`,
+            `${import.meta.env.VITE_BACKEND_URL}/api/ai/mapgpt`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

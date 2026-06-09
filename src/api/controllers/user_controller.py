@@ -6,13 +6,14 @@ from flask_jwt_extended import create_access_token
 from sqlalchemy import select
 from api.models import db, User
 from werkzeug.utils import secure_filename
+from datetime import timedelta
 
 bcrypt = Bcrypt()
 
 class UserController:
     @staticmethod
     def register(data: dict):
-        required_fields = ['fullName', 'email', 'password', 'confirmPassword']
+        required_fields = ['firstname', 'lastname', 'email', 'password', 'confirmPassword']
         
         if not data or not all(field in data for field in required_fields):
             return jsonify({'msg': 'Faltan datos obligatorios para el registro'}), 400
@@ -32,7 +33,8 @@ class UserController:
         hashed_pw = bcrypt.generate_password_hash(data['password']).decode('utf-8')
         
         new_user = User(
-            full_name = data['fullName'],
+            firstname = data['firstname'],
+            lastname = data['lastname'],
             email = data['email'],
             password = hashed_pw,
             selected_mobility = json.dumps(mobility_list),
@@ -44,8 +46,25 @@ class UserController:
         try:
             db.session.add(new_user)
             db.session.commit()
+            
+            expires = timedelta(hours=1)
+            token = create_access_token(
+                identity=str(new_user.id),
+                expires_delta=expires,
+                additional_claims={
+                    'firstname': new_user.firstname,
+                    'lastname': new_user.lastname,
+                    'email': new_user.email,
+                    'avatar': f'/public/avatar/{new_user.avatar}',
+                    'is_active': new_user.is_active,
+                    'is_admin': new_user.is_admin
+                }
+            )
+            
             return jsonify({
                 'msg': 'Usuario registrado correctamente',
+                'token': token,
+                'expiresIn': int(expires.total_seconds()),
                 'user': new_user.serialize()
             }), 201
         except Exception as e:
@@ -66,14 +85,26 @@ class UserController:
         if not user.is_active:
             return jsonify({'msg': 'Cuenta inactiva'})
         
-        token = create_access_token(identity=str(user.id))
+        expires = timedelta(hours=1)
+        token = create_access_token(
+            identity=str(user.id), 
+            expires_delta=expires,
+            additional_claims={
+                'firstname': user.firstname,
+                'lastname': user.lastname,
+                'email': user.email,
+                'avatar': f'/public/avatar/{user.avatar}',
+                'is_active': user.is_active,
+                'is_admin': user.is_admin,
+            }
+        )
         
         return jsonify({
             'msg': 'Autenticación existosa',
             'token': token,
+            'expiresIn': int(expires.total_seconds()),
             'user': user.serialize()
         }), 200
-        
     
     @staticmethod
     def update_avatar(current_user_id: str, file_object):

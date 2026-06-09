@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, Card, Col, Container, Form, Row, ProgressBar, InputGroup } from 'react-bootstrap';
+import { useAuth } from '../context/auth/AuthContext';
 
 const mobilityOptions = [
     { id: 'silla', label: 'Usuario de silla de ruedas', icon: 'fa-wheelchair-move' },
@@ -12,16 +13,20 @@ const mobilityOptions = [
 
 export const PageRegister = () => {
     const [formData, setFormData] = useState({
-        fullName: '',
+        firstname: '',
+        lastname: '',
         email: '',
         password: '',
         confirmPassword: '',
         selectedMobility: [],
     });
 
-    const [showPassword, setShowPassword] = useState({ password: false, confirm: false })
+    const { login } = useAuth()
 
+    const [showPassword, setShowPassword] = useState({ password: false, confirm: false })
     const [step, setStep] = useState(1);
+
+    const navigate = useNavigate()
 
     const toggleMobility = (id) => {
         setFormData((prev) => {
@@ -43,12 +48,43 @@ export const PageRegister = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (step === 1) {
-            setStep(2);
-        } else {
-            console.log("Registro completado:", formData);
+            setStep(2)
+            return
+        }
+
+        const payload = {
+            firstname: formData.firstname,
+            lastname: formData.lastname,
+            email: formData.email,
+            password: formData.password,
+            confirmPassword: formData.confirmPassword,
+            selectedMobility: formData.selectedMobility
+        }
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                alert(data.msg || 'Error en el registro')
+                return
+            }
+
+            await login(formData.email, formData.password)
+
+            navigate('/user-dashboard')
+        } catch (error) {
+            console.error('Error en el registro', error)
+            alert("Error inesperado en el servidor")
         }
     };
 
@@ -67,17 +103,33 @@ export const PageRegister = () => {
                             <Form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
                                 {step === 1 && (
                                     <>
-                                        <Form.Group controlId="fullName">
+                                        <Form.Group controlId="fristname">
                                             <InputGroup className='rounded-3'>
                                                 <InputGroup.Text className='bg-white border-secondary-subtle border-end-0'>
                                                     <i className="fa-solid fa-user text-secondary"></i>
                                                 </InputGroup.Text>
                                                 <Form.Control
                                                     required
-                                                    name="fullName"
+                                                    name="firstname"
                                                     type="text"
-                                                    placeholder="Tu nombre y apellidos"
-                                                    value={formData.fullName}
+                                                    placeholder="Tu nombre"
+                                                    value={formData.firstname}
+                                                    onChange={handleChange}
+                                                    className="px-0 py-2 border-secondary-subtle border-start-0 focus-ring-0 shadow-none"
+                                                />
+                                            </InputGroup>
+                                        </Form.Group>
+
+                                        <Form.Group controlId="lastname">
+                                            <InputGroup className='rounded-3'>
+                                                <InputGroup.Text className='bg-white border-secondary-subtle border-end-0'>
+                                                    <i className="fa-solid fa-user text-secondary"></i>
+                                                </InputGroup.Text>
+                                                <Form.Control
+                                                    name="lastname"
+                                                    type="text"
+                                                    placeholder="Tus apellidos"
+                                                    value={formData.lastname}
                                                     onChange={handleChange}
                                                     className="px-0 py-2 border-secondary-subtle border-start-0 focus-ring-0 shadow-none"
                                                 />

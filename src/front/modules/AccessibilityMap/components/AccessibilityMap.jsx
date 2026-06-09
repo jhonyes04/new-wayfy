@@ -24,7 +24,7 @@ export const AccessibilityMap = () => {
         loading,
         error,
         cursor,
-        places,
+        favorites,
         selectedLocation,
     } = state;
 
@@ -112,16 +112,16 @@ export const AccessibilityMap = () => {
                 )}
 
                 {/* MARCADORES GUARDADOS POR EL USUARIO */}
-                {places?.map((place) => (
+                {favorites?.map((favorite) => (
                     <Marker
-                        key={place.id}
-                        longitude={place.longitude}
-                        latitude={place.latitude}
+                        key={favorite.id}
+                        longitude={favorite.longitude}
+                        latitude={favorite.latitude}
                         anchor="bottom"
                     >
                         <i
                             className="marker-wayfy shadow-sm"
-                            title={place.name}
+                            title={favorite.name}
                         ></i>
                     </Marker>
                 ))}

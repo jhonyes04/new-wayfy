@@ -1,22 +1,21 @@
 import { Button } from 'react-bootstrap'
+import { useAuth } from '../../../context/auth/AuthContext'
+import { memo } from 'react'
 
-export const UserAvatar = () => {
-    const user = {
-        name: "Carlos Mendoza",
-        email: "carlos.m@empresa.com",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80",
-        plan: "Usuario Premium"
-    };
+const UserAvatarComponent = () => {
+    const { user } = useAuth()
 
     return (
         <div className="d-flex align-items-center gap-3">
             <div className="d-flex align-items-center gap-2">
-                <img src={user.avatar} alt={user.name} className="rounded-circle object-fit-cover border" style={{ width: '36px', height: '36px' }} />
+                <img src={user.avatar} alt={user.firstname} className="rounded-circle object-fit-cover border btn-circle" />
                 <div className="d-none d-sm-block text-start" style={{ lineHeight: '1.2' }}>
-                    <p className="small mb-0 fw-semibold text-dark">{user.name}</p>
-                    <span className="text-primary fw-medium" style={{ fontSize: '0.75rem' }}>{user.plan}</span>
+                    <p className="small mb-0 fw-semibold text-dark">{user.firstname}</p>
+                    <span className="text-muted fw-medium" style={{ fontSize: '0.75rem' }}>{user.lastname}</span>
                 </div>
             </div>
         </div>
     )
 }
+
+export const UserAvatar = memo(UserAvatarComponent)

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap'
 import { ButtonMenu } from './ButtonMenu';
 import { UserAvatar } from '../modules/UserDashboard/components/UserAvatar';
+import { useAuth } from '../context/auth/AuthContext';
 
 
 const menuElements = [
@@ -17,6 +18,7 @@ const menuElements = [
 
 export const Navbar = () => {
     const [mostrarMenu, setMostrarMenu] = useState(false);
+    const { user } = useAuth()
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm py-2">
@@ -41,12 +43,18 @@ export const Navbar = () => {
                 </button>
 
                 <div className="d-flex align-items-center gap-2 gap-sm-3 ms-auto order-1 order-lg-3">
-                    <Link to='/login' className="btn btn-secondary btn-circle">
-                        <i className="fa-regular fa-user"></i>
-                    </Link>
-                    <Link to='/user-dashboard' className='text-decoration-none'>
-                        <UserAvatar />
-                    </Link>
+                    {user
+                        ? (
+                            <Link to='/user-dashboard' className='text-decoration-none'>
+                                <UserAvatar />
+                            </Link>
+                        )
+                        : (
+                            <Link to='/login' className="btn btn-secondary btn-circle">
+                                <i className="fa-regular fa-user"></i>
+                            </Link>
+                        )
+                    }
                 </div>
 
                 <div
