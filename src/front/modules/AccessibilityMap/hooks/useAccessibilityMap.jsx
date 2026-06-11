@@ -14,16 +14,17 @@ const useAccessibilityMap = () => {
         activeCategories,
     } = state;
 
+    // Reducido: Eliminamos 'partialElements' y unificamos 'isPositionReady' implícitamente
     const [userCoords, setUserCoords] = useState(null);
     const [geojson, setGeojson] = useState(null);
-    const [partialElements, setPartialElements] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [cursor, setCursor] = useState('grab');
-    const [isPositionReady, setIsPositionReady] = useState(false);
 
     const mapRef = useRef(null);
     const debounceRef = useRef(null);
+    // Usamos una referencia para acumular los elementos progresivos sin disparar re-renders intermedios extra
+    const elementsRef = useRef([]);
 
     // Filtro de GeoJSON
     const filteredGeoJSON = useFilteredGeoJSON(
@@ -122,11 +123,13 @@ const useAccessibilityMap = () => {
         [dispatch],
     );
 
+    // Estado derivado: Reemplaza a 'isPositionReady'. El mapa está listo si hay locación seleccionada o coords de usuario
+    const isPositionReady = !!(selectedLocation || userCoords);
+
     const loadData = useCallback(async () => {
         const map = mapRef.current?.getMap();
         if (!map || !isPositionReady) return;
 
-        // Zoom mínimo recomendado
         if (map.getZoom() < 14) {
             setGeojson(null);
             setError('Acércate más para ver lugares accesibles.');
@@ -138,18 +141,12 @@ const useAccessibilityMap = () => {
 
         setLoading(true);
         setError(null);
-        setPartialElements([]);
+        elementsRef.current = []; // Limpiamos la referencia acumuladora
 
         try {
             await fetchWheelchairPlacesProgressive(bbox, (chunk) => {
-                setPartialElements((prev) => {
-                    const merged = [...prev, ...chunk];
-
-                    const geo = elementsToGeoJSON(merged);
-                    setGeojson(geo);
-
-                    return merged;
-                });
+                elementsRef.current = [...elementsRef.current, ...chunk];
+                setGeojson(elementsToGeoJSON(elementsRef.current));
             });
         } catch (err) {
             console.error(err);
@@ -159,12 +156,9 @@ const useAccessibilityMap = () => {
         }
     }, [isPositionReady]);
 
-    // Geolocalización inicial
+    // OPTIMIZACIÓN: Unificado Geolocalización inicial + Carga de datos inicial cuando el mapa/posición estén listos
     useEffect(() => {
-        if (selectedLocation) {
-            setIsPositionReady(true);
-            return;
-        }
+        if (selectedLocation) return;
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -184,27 +178,26 @@ const useAccessibilityMap = () => {
                         latitude,
                         zoom: 14,
                     });
-                    setIsPositionReady(true);
                 },
                 (err) => {
                     console.error('Error de geolocalización:', err);
-                    setIsPositionReady(true);
+                    setUserCoords({ longitude: 0, latitude: 0 }); // Fallback para marcar la posición como resuelta
                 },
                 { enableHighAccuracy: true, timeout: 5000 },
             );
         } else {
-            setIsPositionReady(true);
+            setUserCoords({ longitude: 0, latitude: 0 });
         }
-    }, []);
+    }, []); // Solo se ejecuta al montar
 
-    // Cargar datos al estar listo
+    // Disparador automático de loadData cuando la posición inicial/seleccionada esté garantizada
     useEffect(() => {
         if (isPositionReady && mapRef.current) {
             loadData();
         }
     }, [isPositionReady, loadData]);
 
-    // FlyTo al seleccionar ubicación
+    // FlyTo al seleccionar ubicación externa
     useEffect(() => {
         if (selectedLocation && mapRef.current) {
             mapRef.current.flyTo({
@@ -216,7 +209,7 @@ const useAccessibilityMap = () => {
         }
     }, [selectedLocation]);
 
-    // Ocultar errores después de 2s
+    // Ocultar errores automáticamente después de 2s
     useEffect(() => {
         const zoomErrorMessage = 'Acércate más para ver lugares accesibles.';
         if (error && error !== zoomErrorMessage) {
@@ -244,9 +237,7 @@ const useAccessibilityMap = () => {
             const hasClusters = map.getLayer('clusters');
             const hasUnclustered = map.getLayer('unclustered-point');
 
-            if (!hasClusters || !hasUnclustered) {
-                return;
-            }
+            if (!hasClusters || !hasUnclustered) return;
 
             const clusters = map.queryRenderedFeatures(evt.point, {
                 layers: ['clusters'],
@@ -277,7 +268,6 @@ const useAccessibilityMap = () => {
         },
         [dispatch],
     );
-
 
     return {
         state: {
