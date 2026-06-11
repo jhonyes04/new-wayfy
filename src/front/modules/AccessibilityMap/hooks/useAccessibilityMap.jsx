@@ -8,7 +8,7 @@ const useAccessibilityMap = () => {
     const { state, dispatch } = useGlobalReducer();
     const {
         viewState,
-        places,
+        favorites,
         selectedLocation,
         activeFilters,
         activeCategories,
@@ -287,7 +287,7 @@ const useAccessibilityMap = () => {
             loading,
             error,
             cursor,
-            places,
+            favorites,
             selectedLocation,
             layers,
         },

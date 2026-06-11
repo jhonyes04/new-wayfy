@@ -105,6 +105,93 @@ class UserController:
             'expiresIn': int(expires.total_seconds()),
             'user': user.serialize()
         }), 200
+        
+    @staticmethod
+    def get_all():
+        try:
+            users =db.session.execute(select(User)).scalar().all()
+            
+            return jsonify({
+                'total': len(users),
+                'users': [user.serialize() for user in users]
+            }), 200
+        except Exception as e:
+            return jsonify({'msg': 'Error al obtener usuarios', 'error': str(e)}), 500
+        
+    @staticmethod
+    def get_by_id(user_id: int):
+        user = db.session.execute(select(User).filter_by(id=user_id)).scalar_one_or_none()
+        
+        if not user:
+            return jsonify({'msg': 'Usuario no encontrado'}), 400
+        
+        return jsonify(user.serialize()), 200
+    
+    @staticmethod
+    def update(user_id: int, data: dict, current_user_id: int, current_user_is_admin: bool):
+        if not current_user_is_admin:
+            if int(user_id) != int(current_user_id):
+                return jsonify({'msg': 'No tienes permiso para actualizar este usuario'}), 403
+        
+        user = db.session.execute(select(User).filter_by(id=user_id)).scalar_one_or_none()
+        
+        if not user:
+            return jsonify({'msg': 'Usuario no encontrado'}), 404
+        
+        try:
+            if 'firstname' in data:
+                user.firstname = data['firstname']
+                
+            if 'lastname' in data:
+                user.lastname = data['lastname']
+                
+            if 'email' in data:
+                existing = db.session.execute(select(User).filter_by(email=data['email'])).scalar_one_or_none()
+                
+                if existing and existing.id != user.id:
+                    return jsonify({'msg': 'El correo ya está en uso'}), 400
+                
+                user.email = data['email']
+                
+            if 'selectedMobility' in data:
+                if not isinstance(data['selectedMobility'], list):
+                    return jsonify({'msg': 'Accesibilidad debe ser una lista'}), 400
+                
+                user.selected_mobility = json.dumps(data['selectedMobility'])
+                
+            db.session.commit()
+            
+            return jsonify({
+                'msg': 'Usuario actualizado correctamente',
+                'user': user.serialize()
+            }), 200
+                
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'msg': 'Error al actualizar usuario', 'error': str(e)}), 500
+        
+    @staticmethod
+    def delete(user_id: int, current_user_id: int, current_user_is_admin: bool):
+        if not current_user_is_admin:
+            if int(user_id != int(current_user_id)):
+                return jsonify({'msg': 'No tienes permiso para eliminar este usuario'}), 403
+        else:
+            if int(user_id) == int(current_user_id):
+                return jsonify({'msg': 'Un administrador no puede eliminar su propia cuenta'}), 403
+        
+        user = db.session.execute(select(User).filter_by(id=user_id)).scalar_one_or_none()
+        
+        if not user:
+            return jsonify({'msg': 'Usuario no encontrado'}), 404
+        
+        try:
+            db.session.delete(user)
+            db.session.commit()
+            
+            return jsonify({'msg': 'Usuario eliminado correctamente'}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'msg': 'Error al eliminar usuario', 'error': str(e)}), 500
     
     @staticmethod
     def update_avatar(current_user_id: str, file_object):

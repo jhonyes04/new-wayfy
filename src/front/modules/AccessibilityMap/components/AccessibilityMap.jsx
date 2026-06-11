@@ -6,14 +6,11 @@ import Map, {
     Source,
     Layer,
 } from 'react-map-gl';
-// import { Legend } from './Legend';
-// import { AIAssistant } from '../AIAssistant/AIAssistant';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '../css/AccessibilityMap.css';
 import useAccessibilityMap from '../hooks/useAccessibilityMap';
 import { AIAssistant } from '../../AIAssistant/components/AIAssistant';
-// import { AIAssistantBoth } from '../AIAssistant/AIAssistantBoth';
 
 export const AccessibilityMap = () => {
     const { state, actions, mapRef } = useAccessibilityMap()
@@ -51,8 +48,6 @@ export const AccessibilityMap = () => {
                     </div>
                 </div>
             )}
-
-            {/* <Legend /> */}
 
             <Map
                 ref={mapRef}
