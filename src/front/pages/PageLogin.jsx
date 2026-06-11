@@ -89,12 +89,12 @@ export const PageLogin = () => {
                                             required
                                         />
                                         <Button
-                                            variant="light"
-                                            className="border-secondary-subtle border-start-0 shadow-none"
+                                            variant="outline-secondary"
+                                            className="border-secondary-subtle border-start-0 bg-light"
                                             onClick={() => setShowPassword(!showPassword)}
                                             type="button"
                                         >
-                                            <i className={`fa-solid ${showPassword ? "fa-eye" : "fa-eye-slash"}`}></i>
+                                            <i className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"} text-muted`}></i>
                                         </Button>
                                     </InputGroup>
                                 </Form.Group>

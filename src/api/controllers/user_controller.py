@@ -109,7 +109,8 @@ class UserController:
     @staticmethod
     def get_all():
         try:
-            users =db.session.execute(select(User)).scalar().all()
+            result = db.session.execute(select(User))
+            users = result.scalars().all()
             
             return jsonify({
                 'total': len(users),
