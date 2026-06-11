@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Card, Col, Container, Form, Row, ProgressBar, InputGroup } from 'react-bootstrap';
 import { useAuth } from '../context/auth/AuthContext';
+import { toast } from 'react-toastify';
 
 const mobilityOptions = [
     { id: 'silla', label: 'Usuario de silla de ruedas', icon: 'fa-wheelchair-move' },
@@ -56,6 +57,11 @@ export const PageRegister = () => {
             return
         }
 
+        if (formData.password !== formData.confirmPassword) {
+            toast.warn('Las contraseñas no coinciden')
+            return
+        }
+
         const payload = {
             firstname: formData.firstname,
             lastname: formData.lastname,
@@ -75,16 +81,18 @@ export const PageRegister = () => {
             const data = await response.json()
 
             if (!response.ok) {
-                alert(data.msg || 'Error en el registro')
+                toast.error(data.msg || 'Error en el registro')
                 return
             }
 
             await login(formData.email, formData.password)
 
+            toast.success('!Registro completado con éxito! Bienvenido')
+
             navigate('/user-dashboard')
         } catch (error) {
             console.error('Error en el registro', error)
-            alert("Error inesperado en el servidor")
+            toast.error("Error inesperado en el servidor")
         }
     };
 

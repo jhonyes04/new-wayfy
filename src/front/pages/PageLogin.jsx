@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, Card, Container, Form, Row, Col, InputGroup, Alert } from 'react-bootstrap';
 import { useAuth } from '../context/auth/AuthContext'
-import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export const PageLogin = () => {
     const { login } = useAuth()
@@ -12,7 +12,6 @@ export const PageLogin = () => {
         password: '',
     });
     const [showPassword, setShowPassword] = useState(false)
-    const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
 
     const handleChange = (e) => {
@@ -26,7 +25,11 @@ export const PageLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        setError(null)
+        if (!formData.email || !formData.password) {
+            toast.warn('Por favor, completa todos los campos')
+            return
+        }
+
         setLoading(true)
 
         try {
@@ -34,7 +37,9 @@ export const PageLogin = () => {
 
             navigate('/user-dashboard')
         } catch (error) {
-            setError(error.message)
+            const backendMsg = error.response?.data?.msg || error.message
+
+            toast.error(backendMsg)
         } finally {
             setLoading(false)
         }
@@ -50,10 +55,6 @@ export const PageLogin = () => {
                                 <h3 className="fw-black text-primary mb-1">¡Bienvenido!</h3>
                                 <p className="text-muted small">Ingresa tus datos para continuar</p>
                             </div>
-
-                            {error && (
-                                <Alert variant='danger'>{error}</Alert>
-                            )}
 
                             <Form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
                                 <Form.Group controlId="email">
