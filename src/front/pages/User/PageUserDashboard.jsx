@@ -5,6 +5,7 @@ import useTooltip, { } from '../../hooks/useTooltip'
 import { useAuth } from '../../context/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { SidebarContent } from '../../modules/UserDashboard/components/SidebarContent';
+import { PageUserProfile } from './PageUserProfile';
 
 export const PageUserDashboard = () => {
     const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -104,13 +105,7 @@ export const PageUserDashboard = () => {
                         )}
 
                         {activeTab === 'profile' && (
-                            <Card className="border-light shadow-sm" style={{ borderRadius: '16px' }}>
-                                <Card.Body className="p-4">
-                                    <h3 className="h5 fw-bold text-primary border-bottom pb-3 mb-3">Información de la Cuenta</h3>
-                                    <p className="text-secondary small mb-2"><strong>Nombre Completo:</strong> {user.firstname} {user.lastname}</p>
-                                    <p className="text-secondary small mb-0"><strong>Email:</strong> {user.email}</p>
-                                </Card.Body>
-                            </Card>
+                            <PageUserProfile />
                         )}
 
                         {!['dashboard', 'profile'].includes(activeTab) && (

@@ -175,11 +175,11 @@ export const PageRegister = () => {
                                                     className="px-0 py-2 border-secondary-subtle border-start-0 focus-ring-0 shadow-none"
                                                 />
                                                 <Button
-                                                    variant='light'
-                                                    className='border-secondary-subtle border-start-0 shadow-none>'
+                                                    variant='outline-secondary'
+                                                    className='border-secondary-subtle border-start-0 bg-light'
                                                     onClick={() => setShowPassword(prev => ({ ...prev, password: !prev.password }))}
                                                 >
-                                                    <i className={`fa-solid ${showPassword.password ? 'fa-eye' : 'fa-eye-slash'}`}></i>
+                                                    <i className={`fa-solid ${showPassword.password ? 'fa-eye-slash' : 'fa-eye'} text-muted`}></i>
                                                 </Button>
                                             </InputGroup>
                                         </Form.Group>
@@ -199,16 +199,14 @@ export const PageRegister = () => {
                                                     className="px-0 py-2 border-secondary-subtle border-start-0 focus-ring-0 shadow-none"
                                                 />
                                                 <Button
-                                                    variant='light'
-                                                    className='border-secondary-subtle border-start-0 shadow-none'
+                                                    variant='outline-secondary'
+                                                    className="border-secondary-subtle border-start-0 bg-light"
                                                     onClick={() => setShowPassword(prev => ({ ...prev, confirm: !prev.confirm }))}
                                                 >
-                                                    <i className={`fa-solid ${showPassword.confirm ? 'fa-eye' : 'fa-eye-slash'}`}></i>
+                                                    <i className={`fa-solid ${showPassword.confirm ? 'fa-eye-slash' : 'fa-eye'} text-muted`}></i>
                                                 </Button>
                                             </InputGroup>
                                         </Form.Group>
-
-
 
                                         <Button
                                             type="submit"
@@ -232,21 +230,15 @@ export const PageRegister = () => {
                                                         key={opt.id}
                                                         type='button'
                                                         onClick={() => toggleMobility(opt.id)}
-                                                        className={`btn btn-sm w-100 h-100 d-flex flex-column align-items-start py-2 border-2 rounded-2 ${isSelected
-                                                            ? 'btn-success border-success text-primary shadow-sm'
-                                                            : 'btn-light border-light-subtle text-muted opacity-50'
+                                                        className={`btn btn-sm w-100 d-flex align-items-center py-2 px-3 border-2 rounded-2 mb-2 ${isSelected
+                                                            ? 'btn-success border-success text-white shadow-sm'
+                                                            : 'btn-light border-light-subtle text-muted opacity-75'
                                                             }`}
                                                     >
-                                                        <div className="d-flex align-items-center gap-2 px-2">
-                                                            <i
-                                                                className={`fa-solid ${opt.icon} ${isSelected ? 'text-white' : 'text-muted'
-                                                                    } mb-1`}
-                                                            ></i>
-                                                            <span
-                                                                className={`${isSelected ? 'text-white' : 'text-muted'} w-100 px-1`}
-                                                            >
-                                                                {opt.label}
-                                                            </span>
+                                                        <div className="d-flex align-items-center gap-3 w-100">
+                                                            <i className={`fa-solid ${opt.icon} ${isSelected ? 'text-white' : 'text-secondary'} fs-5`}></i>
+                                                            <span className="fw-semibold text-start flex-grow-1">{opt.label}</span>
+                                                            {isSelected && <i className="fa-solid fa-circle-check text-white"></i>}
                                                         </div>
                                                     </button>
                                                 );

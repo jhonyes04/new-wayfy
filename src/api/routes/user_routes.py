@@ -55,6 +55,6 @@ def handle_delete_user(user_id):
 def handle_update_avatar():
     current_user_id = get_jwt_identity()
     
-    file_object = request.files.get('avatar')
+    file_object = request.files.get('file')
     
     return UserController.update_avatar(current_user_id, file_object)

@@ -74,8 +74,34 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const updateUserContext = (updateData) => {
+        setUser((prevUser) => {
+            if (!prevUser) return null
+
+            return {
+                ...prevUser,
+                ...updateData
+            }
+        })
+    }
+    // const updateUserContext = (updateData, newToken) => {
+    //     if (newToken) {
+    //         sessionStorage.setItem('wayfy_token', newToken)
+    //         setToken(newToken)
+    //     } else {
+    //         setUser((prevUser) => {
+    //             if (!prevUser) return null;
+
+    //             return {
+    //                 ...prevUser,
+    //                 ...updateData
+    //             }
+    //         })
+    //     }
+    // }
+
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, token, login, logout, loading, updateUserContext }}>
             {!loading && children}
         </AuthContext.Provider>
     );
