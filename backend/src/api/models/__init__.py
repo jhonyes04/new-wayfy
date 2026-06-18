@@ -7,3 +7,4 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 from api.models.user_model import User
+from api.models.accessibility_model import AccessibilityReview, AccessibilityPhoto

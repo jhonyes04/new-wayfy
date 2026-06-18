@@ -33,7 +33,7 @@ export const AvatarSection = ({ avatarPreview, user, handleAvatarChange }) => {
                     type="file"
                     ref={fileInputRef}
                     className="d-none"
-                    accept=".jpg, .jpeg, .png"
+                    accept=".jpg, .jpeg, .png, .webp"
                     onChange={handleAvatarChange}
                 />
             </div>
