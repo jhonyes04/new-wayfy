@@ -1,0 +1,82 @@
+from datetime import datetime, timezone
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, Text, Boolean, Integer, DateTime, ForeignKey
+from api.models import db
+
+
+class AccessibilityReview(db.Model):
+    __tablename__ = 'accessibility_reviews'
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    
+    # ID del nodo en OpenStreetMap (es un string porque puede ser "node/123" o solo "123")
+    osm_id: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    osm_type: Mapped[str] = mapped_column(String(10), nullable=False, default='node')  # node, way, relation
+    place_name: Mapped[str] = mapped_column(String(200), nullable=True)
+
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    user: Mapped['User'] = relationship('User', backref='accessibility_reviews')
+
+    # Accesibilidad general (igual que OSM: yes / limited / no)
+    wheelchair: Mapped[str] = mapped_column(String(10), nullable=True)
+
+    # Detalles booleanos
+    has_ramp: Mapped[bool] = mapped_column(Boolean, nullable=True)
+    has_elevator: Mapped[bool] = mapped_column(Boolean, nullable=True)
+    has_accessible_toilet: Mapped[bool] = mapped_column(Boolean, nullable=True)
+    has_accessible_parking: Mapped[bool] = mapped_column(Boolean, nullable=True)
+    automatic_door: Mapped[bool] = mapped_column(Boolean, nullable=True)
+
+    # Descripción libre
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc)
+    )
+
+    # Relación con fotos
+    photos: Mapped[list['AccessibilityPhoto']] = relationship(
+        'AccessibilityPhoto', backref='review', cascade='all, delete-orphan'
+    )
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'osm_id': self.osm_id,
+            'osm_type': self.osm_type,
+            'place_name': self.place_name,
+            'user_id': self.user_id,
+            'user_name': f"{self.user.firstname} {self.user.lastname}" if self.user else None,
+            'wheelchair': self.wheelchair,
+            'has_ramp': self.has_ramp,
+            'has_elevator': self.has_elevator,
+            'has_accessible_toilet': self.has_accessible_toilet,
+            'has_accessible_parking': self.has_accessible_parking,
+            'automatic_door': self.automatic_door,
+            'description': self.description,
+            'photos': [p.serialize() for p in self.photos],
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
+        }
+
+
+class AccessibilityPhoto(db.Model):
+    __tablename__ = 'accessibility_photos'
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    review_id: Mapped[int] = mapped_column(Integer, ForeignKey('accessibility_reviews.id'), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    caption: Mapped[str] = mapped_column(String(200), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'url': f'/api/accessibility/photos/{self.filename}',
+            'caption': self.caption,
+            'created_at': self.created_at.isoformat(),
+        }
