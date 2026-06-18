@@ -1,0 +1,183 @@
+import os
+import bcrypt
+import json
+from flask import Blueprint, request, jsonify
+from api.models import db, User
+from flask_cors import CORS
+from flask_jwt_extended import create_access_token
+from api.prompts.mapgpt_prompt import MAPGPT_SYSTEM_PROMPT
+from api.models import db, User, Event
+from groq import Groq
+
+
+api = Blueprint('api', __name__)
+CORS(api)
+
+
+@api.route('/mapgpt', methods=['POST'])
+def map_gpt():
+    data = request.get_json()
+    user_prompt = data.get('prompt')
+    client = Groq(api_key=os.getenv('GROQ_API_KEY'))
+
+    if not user_prompt or not user_prompt.strip():
+        return jsonify({'error': 'Prompt vacío'}), 400
+
+    try:
+        completion = client.chat.completions.create(
+            messages=[
+                {
+                    'role': 'system',
+                    "content": MAPGPT_SYSTEM_PROMPT
+                },
+                {
+                    'role': 'user',
+                    'content': user_prompt
+                }
+            ],
+            model='llama-3.1-8b-instant',
+            response_format={'type': 'json_object'}
+        )
+
+        ai_response = json.loads(completion.choices[0].message.content)
+
+        return jsonify(ai_response), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@api.route('/hello', methods=['POST', 'GET'])
+def handle_hello():
+
+    response_body = {
+        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
+    }
+
+    return jsonify(response_body), 200
+
+
+@api.route('/signup', methods=['POST'])
+def handle_signup():
+    body = request.get_json()
+
+    if not body or "email" not in body or "password" not in body:
+        return jsonify({"msg": "Datos incompletos"}), 400
+
+    user_check = User.query.filter_by(email=body["email"]).first()
+    if user_check:
+        return jsonify({"msg": "El usuario ya existe"}), 400
+
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(body["password"].encode('utf-8'), salt)
+
+    new_user = User(
+        email=body["email"],
+        fullname=body["fullname"],
+        mobility_phase=body["mobility_phase"],
+        password=hashed_password.decode('utf-8'),
+        is_active=True
+    )
+
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+
+        # Aqui corregí
+        # Antes tenía un 'return' aquí mismo y el código se cortaba.
+        # Vi que si hacía eso, nunca llegaba a la parte de generar el token
+        # ni a devolver los datos del usuario. Eliminé ese return para que
+        # la función siga su curso natural.
+
+        access_token = create_access_token(identity=str(new_user.id))
+
+        return jsonify({
+            "msg": "Usuario creado con éxito",
+            "token": access_token,
+            "user": new_user.serialize()
+        }), 201
+
+    except Exception as e:
+        return jsonify({"msg": "Error al guardar en base de datos"}), 500
+
+
+# PARTE DE BACKEND DE INTINERARY (LUZ)
+
+@api.route('/events', methods=['GET'])
+def get_events():
+    events = Event.query.all()
+    return jsonify([event.serialize() for event in events]), 200
+
+
+@api.route('/events', methods=['POST'])
+def create_event():
+    body = request.get_json()
+
+    new_event = Event(
+        title=body["title"],
+        start=body["start"],
+        end=body["end"],
+        category=body.get("category", "otros")
+    )
+
+    db.session.add(new_event)
+    db.session.commit()
+
+    return jsonify(new_event.serialize()), 201
+
+
+@api.route('/events/<int:id>', methods=['PUT'])
+def update_event(id):
+    body = request.get_json()
+    event = Event.query.get(id)
+
+    if not event:
+        return jsonify({"msg": "No existe"}), 404
+
+    event.title = body.get("title", event.title)
+    event.start = body.get("start", event.start)
+    event.end = body.get("end", event.end)
+    event.category = body.get("category", event.category)
+
+    db.session.commit()
+
+    return jsonify(event.serialize()), 200
+
+
+@api.route('/events/<int:id>', methods=['DELETE'])
+def delete_event(id):
+    event = Event.query.get(id)
+
+    if not event:
+        return jsonify({"msg": "No existe"}), 404
+
+    db.session.delete(event)
+    db.session.commit()
+
+    return jsonify({"msg": "Eliminado"}), 200
+
+# Agregue este endpoint para que el frontend pueda iniciar sesión.
+
+
+@api.route('/login', methods=['POST'])
+def handle_login():
+    body = request.get_json()
+
+    # Verificamos que lleguen los datos
+    if not body or "email" not in body or "password" not in body:
+        return jsonify({"msg": "Email y contraseña requeridos"}), 400
+
+    # Buscamos al usuario por su email
+    user = User.query.filter_by(email=body["email"]).first()
+
+    # Comprobamos si existe y si la contraseña coincide usando bcrypt.checkpw
+    if user is None or not bcrypt.checkpw(body["password"].encode('utf-8'), user.password.encode('utf-8')):
+        return jsonify({"msg": "Credenciales incorrectas"}), 401
+
+    # Si todo es correcto, creamos el token
+    access_token = create_access_token(identity=str(user.id))
+
+    # Devolvemos el token y los datos serializados del usuario
+    return jsonify({
+        "token": access_token,
+        "user": user.serialize()
+    }), 200

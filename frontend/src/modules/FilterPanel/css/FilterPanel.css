@@ -1,0 +1,19 @@
+.filter-open {
+    transform: translateX(0);
+    opacity: 1;
+    transition:
+        transform 0.35s ease-in-out,
+        opacity 0.35s ease-in-out;
+}
+
+.filter-closed {
+    transform: translateX(100%);
+    opacity: 0;
+    transition:
+        transform 0.35s ease-in-out,
+        opacity 0.35s ease-in-out;
+}
+
+.filter-content {
+    scroll-behavior: smooth;
+}

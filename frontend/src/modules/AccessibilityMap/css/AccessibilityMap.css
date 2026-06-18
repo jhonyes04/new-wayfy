@@ -1,0 +1,90 @@
+.mapa {
+    width: 100%;
+    height: 100%;
+}
+
+.marker-wayfy {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background: url('../../../assets/img/marker-wayfy.png') no-repeat center
+        center/cover;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Por encima del mapa */
+}
+
+.custom-modal {
+    width: 300px;
+    z-index: 2001;
+}
+
+.legend {
+    bottom: 30px;
+    left: 12px;
+    width: 200px;
+}
+
+.legend-icon {
+    width: 10px;
+    height: 10px;
+    padding: 6px;
+}
+
+.geoapify-searchbox {
+    position: relative;
+    width: 100%;
+}
+
+.geoapify-searchbox input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+}
+
+.geoapify-searchbox input:focus {
+    border-color: #007aff;
+}
+
+.geoapify-results {
+    position: absolute;
+    top: 48px;
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    max-height: 280px;
+    overflow-y: auto;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 6px 0;
+}
+
+.geoapify-results li {
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+.geoapify-results li:hover {
+    background: #f2f2f2;
+}
+
+.geoapify-results .secondary {
+    font-size: 13px;
+    color: #666;
+}
