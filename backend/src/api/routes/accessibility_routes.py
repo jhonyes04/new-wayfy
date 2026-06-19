@@ -23,13 +23,16 @@ def handle_upload_photos(review_id):
     files = request.files.getlist('photos')
     return AccessibilityController.upload_photos(review_id, files, current_user_id)
 
+@accessibility_bp.route('/photos/<int:photo_id>', methods=['DELETE'])
+@jwt_required()
+def handle_delete_photo(photo_id):
+    curren_user_id = int(get_jwt_identity())
+    return AccessibilityController.delete_photo(photo_id, curren_user_id)
 
 @accessibility_bp.route('/photos/<path:filename>', methods=['GET'])
 def handle_serve_photo(filename):
     return AccessibilityController.serve_photo(filename)
 
-@accessibility_bp.route('/<string:osm_id>/my-review', methods=['GET'])
-@jwt_required()
-def handle_get_my_review(osm_id):
-    current_user_id = int(get_jwt_identity())
-    return AccessibilityController.get_my_review(osm_id, current_user_id)
+@accessibility_bp.route('/<string:osm_id>/review', methods=['GET'])
+def handle_get_place_review(osm_id):
+    return AccessibilityController.get_place_review(osm_id)

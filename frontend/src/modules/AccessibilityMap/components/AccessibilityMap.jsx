@@ -7,13 +7,15 @@ import Map, {
     Layer,
 } from 'react-map-gl';
 
+import { Alert, Spinner } from 'react-bootstrap';
+
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '../css/AccessibilityMap.css';
 import useAccessibilityMap from '../hooks/useAccessibilityMap';
 import { AIAssistant } from '../../AIAssistant/components/AIAssistant';
 
 export const AccessibilityMap = () => {
-    const { state, actions, mapRef } = useAccessibilityMap()
+    const { state, actions, mapRef } = useAccessibilityMap();
     const {
         viewState,
         userCoords,
@@ -29,23 +31,39 @@ export const AccessibilityMap = () => {
         <div className="w-100 h-100 position-relative overflow-hidden">
             {/* INDICADOR DE CARGA */}
             {loading && (
-                <div className="position-absolute z-1" style={{ top: '5px', left: '60px' }}>
-                    <div className="alert alert-light shadow-sm border-0 d-flex align-items-center rounded-pill px-4 py-2 gap-3">
-                        <div className="spinner-border spinner-border-sm text-primary"></div>
+                <div
+                    className="position-absolute z-1"
+                    style={{ top: '5px', left: '60px' }}
+                >
+                    <Alert
+                        variant="light"
+                        className="shadow-sm border-0 d-flex align-items-center rounded-pill px-4 py-2 gap-3 mb-0"
+                    >
+                        <Spinner
+                            animation="border"
+                            size="sm"
+                            variant="primary"
+                        />
                         <span className="text-small fw-bold text-primary">
                             Buscando lugares accesibles cercanos...
                         </span>
-                    </div>
+                    </Alert>
                 </div>
             )}
 
             {/* AVISO DE ERROR */}
             {!loading && error && (
-                <div className="position-absolute z-1" style={{ top: '5px', left: '60px' }}>
-                    <div className="alert alert-warning border-0 shadow-sm py-2 px-4 small fw-bold rounded-pill">
+                <div
+                    className="position-absolute z-1"
+                    style={{ top: '5px', left: '60px' }}
+                >
+                    <Alert
+                        variant="warning"
+                        className="border-0 shadow-sm py-2 px-4 small fw-bold rounded-pill mb-0"
+                    >
                         <i className="fa-solid fa-circle-exclamation me-2"></i>
                         <span className="text-small">{error}</span>
-                    </div>
+                    </Alert>
                 </div>
             )}
 

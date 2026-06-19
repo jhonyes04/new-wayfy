@@ -17,12 +17,10 @@ class AccessibilityController:
 
     @staticmethod
     def get_by_osm_id(osm_id: str):
-        """Devuelve todas las reseñas de un lugar OSM con agregado del wheelchair más votado."""
         reviews = db.session.execute(
             select(AccessibilityReview).where(AccessibilityReview.osm_id == osm_id)
         ).scalars().all()
 
-        # Calcular el estado más votado
         counts = {'yes': 0, 'limited': 0, 'no': 0}
         for r in reviews:
             if r.wheelchair in counts:
@@ -41,7 +39,6 @@ class AccessibilityController:
 
     @staticmethod
     def upsert(osm_id: str, data: dict, current_user_id: int):
-        """Crea o actualiza la reseña del usuario para este lugar."""
         if not data:
             return jsonify({'msg': 'No se recibieron datos'}), 400
 
@@ -49,16 +46,11 @@ class AccessibilityController:
         if wheelchair and wheelchair not in ('yes', 'limited', 'no'):
             return jsonify({'msg': 'Valor de wheelchair inválido'}), 400
 
-        # Busca si el usuario ya tiene una reseña para este lugar
         existing = db.session.execute(
-            select(AccessibilityReview).where(
-                AccessibilityReview.osm_id == osm_id,
-                AccessibilityReview.user_id == current_user_id
-            )
+            select(AccessibilityReview).where(AccessibilityReview.osm_id == osm_id)
         ).scalar_one_or_none()
 
         if existing:
-            # Actualizar
             existing.wheelchair = wheelchair
             existing.has_ramp = data.get('has_ramp')
             existing.has_elevator = data.get('has_elevator')
@@ -67,14 +59,14 @@ class AccessibilityController:
             existing.automatic_door = data.get('automatic_door')
             existing.description = data.get('description')
             existing.place_name = data.get('place_name')
+            existing.last_modified_by_id = current_user_id  # ← registra quién editó
             review = existing
         else:
-            # Crear
             review = AccessibilityReview(
                 osm_id=osm_id,
                 osm_type=data.get('osm_type', 'node'),
                 place_name=data.get('place_name'),
-                user_id=current_user_id,
+                last_modified_by_id=current_user_id,
                 wheelchair=wheelchair,
                 has_ramp=data.get('has_ramp'),
                 has_elevator=data.get('has_elevator'),
@@ -89,31 +81,25 @@ class AccessibilityController:
         return jsonify(review.serialize()), 200
     
     @staticmethod
-    def get_my_review(osm_id: str, current_user_id: int):
+    def get_place_review(osm_id: str):
         review = db.session.execute(
-            select(AccessibilityReview).where(
-                AccessibilityReview.osm_id == osm_id,
-                AccessibilityReview.user_id == current_user_id
-            )
+            select(AccessibilityReview).where(AccessibilityReview.osm_id == osm_id)
         ).scalar_one_or_none()
 
         if not review:
-            return jsonify({'msg': 'Sin reseña previa'}), 404
+            return jsonify({'msg': 'Sin datos de accesibilidad'}), 404
 
         return jsonify(review.serialize()), 200
 
     @staticmethod
     def upload_photos(review_id: int, files, current_user_id: int):
-        """Sube fotos asociadas a una reseña."""
         review = db.session.get(AccessibilityReview, review_id)
         if not review:
             return jsonify({'msg': 'Reseña no encontrada'}), 404
-        if review.user_id != current_user_id:
-            return jsonify({'msg': 'Sin permisos'}), 403
 
         existing_count = len(review.photos)
         if existing_count + len(files) > MAX_PHOTOS_PER_REVIEW:
-            return jsonify({'msg': f'Máximo {MAX_PHOTOS_PER_REVIEW} fotos por reseña'}), 400
+            return jsonify({'msg': f'Máximo {MAX_PHOTOS_PER_REVIEW} fotos por lugar'}), 400
 
         photos_dir = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), '../../../public/accessibility_photos'
@@ -121,11 +107,11 @@ class AccessibilityController:
         os.makedirs(photos_dir, exist_ok=True)
 
         saved = []
-        for file in files:
+        for i, file in enumerate(files):
             if not _allowed_file(file.filename):
                 continue
             ext = file.filename.rsplit('.', 1)[1].lower()
-            filename = secure_filename(f"{int(time.time())}_{current_user_id}.{ext}")
+            filename = secure_filename(f"{int(time.time())}_{current_user_id}_{i}.{ext}")
             file.save(os.path.join(photos_dir, filename))
 
             photo = AccessibilityPhoto(
@@ -147,3 +133,26 @@ class AccessibilityController:
             os.path.dirname(os.path.abspath(__file__)), '../../../public/accessibility_photos'
         )
         return flask.send_from_directory(photos_dir, filename)
+    
+    @staticmethod
+    def delete_photo(photo_id: int, current_user_id: int):
+        photo = db.session.get(AccessibilityPhoto, photo_id)
+        
+        if not photo:
+            return jsonify({'msg': 'Foto no encontrada'}), 404
+        if photo.user_id != current_user_id:
+            return jsonify({'msg': 'Sin permisos para eliminar esta foto'}), 403
+        
+        photos_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), '../../../public/accessibility_photos'
+        )
+        
+        file_path = os.path.join(photos_dir, photo.filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            
+        db.session.delete(photo)
+        db.session.commit()
+        
+        return jsonify({'msg': 'Foto eliminada'}), 200
+            
