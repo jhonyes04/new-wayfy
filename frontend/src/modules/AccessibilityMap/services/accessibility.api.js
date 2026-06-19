@@ -11,13 +11,14 @@ export const accessibilityApi = {
         return response.json();
     },
 
-    getMyReview: async (osmId) => {
-        const response = await fetch(`${BASE_URL}/${osmId}/my-review`, {
+    getPlaceReview: async (osmId) => {
+        const response = await fetch(`${BASE_URL}/${osmId}/review`, {
             headers: { Authorization: `Bearer ${getToken()}` },
         });
 
         if (response.status === 404) return null;
-        if (!response.ok) throw new Error('Error al obtener reseña');
+        if (!response.ok)
+            throw new Error('Error al obtener datos de accesibilidad');
 
         return response.json();
     },
@@ -49,6 +50,17 @@ export const accessibilityApi = {
         });
 
         if (!response.ok) throw new Error('Error al subir fotos');
+
+        return response.json();
+    },
+
+    deletePhoto: async (photoId) => {
+        const response = await fetch(`${BASE_URL}/photos/${photoId}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${getToken()}` },
+        });
+
+        if (!response.ok) throw new Error('Error al eliminar la foto');
 
         return response.json();
     },
