@@ -6,13 +6,21 @@ const BOOLEAN_LABELS = {
     automatic_door: 'Puerta automática',
 };
 
+const formatDate = (isoString) =>
+    new Date(isoString).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    });
+
 export const CommunityReviewSection = ({ communityReview, onPhotoClick }) => {
-    if (communityReview === undefined) return (
-        <div className="text-white small mt-2">
-            <i className="fa-solid fa-spinner fa-spin me-1"></i>
-            Cargando datos de accesibilidad...
-        </div>
-    );
+    if (communityReview === undefined)
+        return (
+            <div className="text-white small mt-2">
+                <i className="fa-solid fa-spinner fa-spin me-1"></i>
+                Cargando datos de accesibilidad...
+            </div>
+        );
 
     if (!communityReview) return null;
 
@@ -65,6 +73,22 @@ export const CommunityReviewSection = ({ communityReview, onPhotoClick }) => {
                         ))}
                     </div>
                 )}
+                <div
+                    className="d-flex justify-content-between mt-2 pt-2 border-top border-secondary"
+                    style={{ fontSize: '0.7rem', opacity: 0.7 }}
+                >
+                    {communityReview.last_modified_by_name && (
+                        <div>
+                            <i className="fa-solid fa-user me-1"></i>
+                            {communityReview.last_modified_by_name}
+                        </div>
+                    )}
+                    <div>
+                        <i className="fa-solid fa-calendar-day me-1"></i>
+                        Última actualización:{' '}
+                        {formatDate(communityReview.updated_at)}
+                    </div>
+                </div>
             </div>
         </div>
     );
