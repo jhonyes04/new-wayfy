@@ -302,6 +302,7 @@ export const translateValue = (key, value) => {
 export const translateTag = (key) => OSM_TRANSLATIONS.tagLabels[key] || key;
 
 export const translateCategory = (key) => {
+    if (!key) return 'Sin categoría';
     const cat = OSM_TRANSLATIONS.categories[key] || key;
     return cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
 };

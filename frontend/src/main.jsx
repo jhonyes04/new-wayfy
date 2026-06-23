@@ -12,8 +12,8 @@ import { ToastContainer } from 'react-toastify';
 const Main = () => {
     return (
         <React.StrictMode>
-            <StoreProvider>
-                <AuthProvider>
+            <AuthProvider>
+                <StoreProvider>
                     <RouterProvider router={router} />
                     <ToastContainer
                         theme="colored"
@@ -27,8 +27,8 @@ const Main = () => {
                         draggable
                         pauseOnHover
                     />
-                </AuthProvider>
-            </StoreProvider>
+                </StoreProvider>
+            </AuthProvider>
         </React.StrictMode>
     );
 };

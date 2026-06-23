@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Button, Badge, Card } from 'react-bootstrap';
+import { Button, Badge, Card, Alert } from 'react-bootstrap';
 import {
     translateCategory,
     getCategoryIcon,
 } from '../utils/translations/OSM_TRANSLATIONS';
 import useGlobalReducer from '../../../hooks/useGlobalReducer';
 import { useAuth } from '../../../context/auth/AuthContext';
+import { useFavorites } from '../hooks/useFavorites';
 import { accessibilityApi } from '../services/accessibility.api';
 import { AccessibilityEditor } from './AccessibilityEditor';
 import { PhotoLightbox } from './PhotoLightbox';
@@ -29,9 +30,9 @@ const WHEELCHAIR_LABELS = {
 };
 
 export const AccessibilityDetails = ({ feature, onClose }) => {
-    const { state, dispatch } = useGlobalReducer();
-    const { favorites } = state;
     const { user } = useAuth();
+    const { addFavorite, removeFavorite, isFavorite, loading, error } =
+        useFavorites();
 
     const [showEditor, setShowEditor] = useState(false);
     const [communityReview, setCommunityReview] = useState(undefined);
@@ -46,7 +47,6 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
             : properties.all_tags || {};
 
     const coords = feature.geometry?.coordinates;
-    const isFavorite = favorites?.some((f) => f.id === properties.id);
     const wheelchair =
         WHEELCHAIR_LABELS[properties.wheelchair] || WHEELCHAIR_LABELS.unknown;
     const osmUrl = `https://www.openstreetmap.org/${properties.osm_type || 'node'}/${properties.id}`;
@@ -63,19 +63,18 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
         fetchCommunityReview();
     }, [properties.id]);
 
-    const handleToggleFavorite = () => {
-        if (isFavorite) {
-            dispatch({ type: 'REMOVE_FAVORITE', payload: properties.id });
+    const handleToggleFavorite = async () => {
+        if (isFavorite(properties.id)) {
+            await removeFavorite(properties.id);
         } else {
-            dispatch({
-                type: 'ADD_FAVORITE',
-                payload: {
-                    id: properties.id,
-                    name: properties.name || 'Lugar sin nombre',
+            await addFavorite(
+                properties.id,
+                properties.name || 'Lugar sin nombre',
+                {
                     longitude: coords?.[0],
                     latitude: coords?.[1],
                 },
-            });
+            );
         }
     };
 
@@ -135,6 +134,12 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                         </div>
                     </div>
 
+                    {error && (
+                        <Alert variant="warning" className="mt-2 mb-2 py-2">
+                            {error}
+                        </Alert>
+                    )}
+
                     <CommunityReviewSection
                         communityReview={communityReview}
                         onPhotoClick={(idx) => setCommunityLightbox(idx)}
@@ -153,11 +158,24 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                                 <i className="fa-solid fa-pencil me-1"></i>
                                 Editar accesibilidad
                             </Button>
-                            <i
-                                className={`${isFavorite ? 'fa-solid' : 'fa-regular'} fa-heart fa-2x text-danger`}
-                                style={{ cursor: 'pointer' }}
+                            <button
+                                className="btn btn-link p-0 text-decoration-none"
                                 onClick={handleToggleFavorite}
-                            ></i>
+                                disabled={loading}
+                                style={{
+                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                }}
+                                title={
+                                    isFavorite(properties.id)
+                                        ? 'Eliminar de favoritos'
+                                        : 'Agregar a favoritos'
+                                }
+                            >
+                                <i
+                                    className={`${isFavorite(properties.id) ? 'fa-solid' : 'fa-regular'} fa-heart fa-2x text-danger`}
+                                    style={{ opacity: loading ? 0.5 : 1 }}
+                                ></i>
+                            </button>
                         </div>
                     )}
                 </Card.Body>

@@ -5,7 +5,7 @@ from flask import jsonify, current_app
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token
 from sqlalchemy import select
-from api.models import db, User
+from api.models import db, User, UserFavorite
 from werkzeug.utils import secure_filename
 
 bcrypt = Bcrypt()
@@ -251,3 +251,96 @@ class UserController:
         except Exception as e:
             db.session.rollback()
             return jsonify({'msg': 'Error al procesar el reemplazo del archivo', 'error': str(e)}), 500
+        
+    @staticmethod
+    def add_favorite(user_id: int, data: dict, current_user_id: int, current_user_is_admin: bool):
+        if not current_user_is_admin and int(user_id) != int(current_user_id):
+            return jsonify({'msg': 'No tienes permiso para modifcar estos favoritos'}), 403
+        
+        if not data or 'osm_id' not in data:
+            return jsonify({'msg': 'osm_id es requerido'}), 400
+        
+        user = db.session.execute(select(User).filter_by(id=user_id)).scalar_one_or_none()
+        
+        if not user:
+            return jsonify({'msg': 'Usuario no encontrado'}), 404
+        
+        osm_id = data['osm_id']
+        place_name = data.get('place_name', None)
+        longitude = data.get('longitude', None)
+        latitude = data.get('latitude', None)
+        
+        existing = db.session.execute(
+            select(UserFavorite).filter_by(user_id=user_id, osm_id=osm_id)
+        ).scalar_one_or_none()
+        
+        if existing:
+            return jsonify({'msg': 'Este lugar ya está en tus favoritos'}), 400
+        
+        try:
+            new_favorite = UserFavorite(
+                user_id=user_id,
+                osm_id=osm_id,
+                place_name=place_name,
+                longitude=longitude,
+                latitude=latitude
+            )
+            
+            db.session.add(new_favorite)
+            db.session.commit()
+            
+            return jsonify({
+                'msg': 'Favorito agregado correctamente',
+                'favorite': new_favorite.serialize()
+            }), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'msg': 'Error al agregar favorito', 'error': str(e)}), 500
+        
+    @staticmethod
+    def remove_favorite(user_id: int, osm_id: str, current_user_id: int, current_user_is_admin: bool):
+        if not current_user_is_admin and int(user_id) != int(current_user_id):
+            return jsonify({'msg': 'No tienes permiso para modificar estos favoritos'}), 403
+        
+        user = db.session.execute(select(User).filter_by(id=user_id)).scalar_one_or_none()
+        
+        if not user:
+            return jsonify({'msg': 'Usuario no encontrado'}), 404
+        
+        favorite = db.session.execute(
+            select(UserFavorite).filter_by(user_id=user_id, osm_id=osm_id)
+        ).scalar_one_or_none()
+        
+        if not favorite:
+            return jsonify({'msg': 'Favorito no encontrado'}), 404
+        
+        try:
+            db.session.delete(favorite)
+            db.session.commit()
+            
+            return jsonify({
+                'msg': 'Favorito eliminado correctamente',
+                'osm_id': osm_id
+            }), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'msg': 'Error al eliminar favorito', 'error': str(e)}), 500
+        
+    @staticmethod
+    def get_user_favorites(user_id: int, current_user_id: int, current_user_is_admin: bool):
+        user = db.session.execute(select(User).filter_by(id=user_id)).scalar_one_or_none()
+        
+        if not user:
+            return jsonify({'msg': 'Usuario no encontrado'}), 404
+        
+        try:
+            favorites = db.session.execute(
+                select(UserFavorite).filter_by(user_id=user_id).order_by(UserFavorite.created_at.desc())
+            ).scalars().all()
+            
+            return jsonify({
+                'total': len(favorites),
+                'favorites': [fav.serialize() for fav in favorites]
+            }), 200
+        except Exception as e:
+            return jsonify({'msg': 'Error al obtener favoritos', 'error': str(e)}), 500

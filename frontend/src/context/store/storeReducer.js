@@ -17,6 +17,9 @@ export const storeReducer = (state, action) => {
                 places: state.places.filter((p) => p.id !== action.payload),
             };
 
+        case 'SET_FAVORITES':
+            return { ...state, favorites: action.payload };
+
         case 'ADD_FAVORITE':
             return {
                 ...state,
@@ -26,7 +29,7 @@ export const storeReducer = (state, action) => {
             return {
                 ...state,
                 favorites: state.favorites.filter(
-                    (fav) => fav.id !== action.payload,
+                    (fav) => String(fav.id) !== String(action.payload),
                 ),
             };
 

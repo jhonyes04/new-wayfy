@@ -61,6 +61,48 @@ def handle_delete_user(user_id):
         current_user_id=current_user_id,
         current_user_is_admin=current_user_is_admin
     )
+    
+@user_bp.route('/<int:user_id>/favorites', methods=['POST'])
+@jwt_required()
+def handle_add_favorite(user_id):
+    data = request.get_json()
+    claims = get_jwt()
+    current_user_id = int(get_jwt_identity())
+    current_user_is_admin = claims.get('is_admin', False)
+    
+    return UserController.add_favorite(
+        user_id=user_id,
+        data=data,
+        current_user_id=current_user_id,
+        current_user_is_admin=current_user_is_admin
+    )
+    
+@user_bp.route('/<int:user_id>/favorites/<osm_id>', methods=['DELETE'])
+@jwt_required()
+def handle_remove_favorite(user_id, osm_id):
+    claims = get_jwt()
+    current_user_id = int(get_jwt_identity())
+    current_user_is_admin = claims.get('is_admin', False)
+    
+    return UserController.remove_favorite(
+        user_id=user_id,
+        osm_id=osm_id,
+        current_user_id=current_user_id,
+        current_user_is_admin=current_user_is_admin
+    )
+    
+@user_bp.route('/<int:user_id>/favorites', methods=['GET'])
+@jwt_required()
+def handle_get_user_favorites(user_id):
+    claims = get_jwt()
+    current_user_id = int(get_jwt_identity())
+    current_user_is_admin = claims.get('is_admin', False)
+    
+    return UserController.get_user_favorites(
+        user_id=user_id,
+        current_user_id=current_user_id,
+        current_user_is_admin=current_user_is_admin
+    )
 
 @user_bp.route('/avatar', methods=['PUT'])
 @jwt_required()
