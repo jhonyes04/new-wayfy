@@ -18,6 +18,7 @@ import { PersonalDataSection } from '../../modules/UserDashboard/components/Pers
 import { MobilitySection } from '../../modules/UserDashboard/components/MobilitySection';
 import { SecuritySection } from '../../modules/UserDashboard/components/SecuritySection';
 import { useProtectedImage } from '../../hooks/useProtectedImage';
+import { passwordRequirements } from '../../components/PasswordStrengthIndicator';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const DEFAULT_AVATAR = `${API_BASE_URL}/api/users/avatar/default_avatar.png`;
@@ -209,15 +210,20 @@ export const PageUserProfile = () => {
 
         if (!userId) return;
 
-        if (formData.password || formData.confirmPassword) {
-            if (formData.password !== formData.confirmPassword) {
-                toast.error('Las contraseñas no coinciden.');
-                return;
-            }
-            if (formData.password.length < 8) {
-                toast.warn('La contraseña debe tener al menos 8 caracteres.');
-                return;
-            }
+        const allPassed = passwordRequirements.every((r) =>
+            r.test(formData.password),
+        );
+
+        if (!allPassed) {
+            toast.warn(
+                'La contraseña no cumple todos los requisitos de seguridad',
+            );
+            return;
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            toast.warn('Las contraseñas no coinciden');
+            return;
         }
 
         setActionLoading(true);
