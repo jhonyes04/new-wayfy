@@ -73,6 +73,10 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                 {
                     longitude: coords?.[0],
                     latitude: coords?.[1],
+                    wheelchair: properties.wheelchair,
+                    osm_type: properties.osm_type,
+                    sub_type: properties.sub_type,
+                    all_tags: tags,
                 },
             );
         }

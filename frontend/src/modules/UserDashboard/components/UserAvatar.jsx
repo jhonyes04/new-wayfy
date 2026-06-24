@@ -5,7 +5,7 @@ import { useProtectedImage } from '../../../hooks/useProtectedImage';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-const UserAvatarComponent = () => {
+const UserAvatarComponent = ({ textColor = 'light' }) => {
     const { user, token } = useAuth();
     const avatarUrl = user?.avatar ? `${API_BASE_URL}${user.avatar}` : null;
     const blobUrl = useProtectedImage(avatarUrl, token);
@@ -22,7 +22,7 @@ const UserAvatarComponent = () => {
                     className="d-none d-sm-block text-start"
                     style={{ lineHeight: '1.2' }}
                 >
-                    <p className="small mb-0 fw-semibold text-dark">
+                    <p className={`small mb-0 fw-semibold text-${textColor}`}>
                         {user?.firstname}
                     </p>
                     <span

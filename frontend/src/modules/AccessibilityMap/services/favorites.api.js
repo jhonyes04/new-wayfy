@@ -6,7 +6,18 @@ const getAuthHeader = (token) => ({
 });
 
 export const favoritesApi = {
-    async addFavorite(userId, osm_id, place_name, longitude, latitude, token) {
+    async addFavorite(
+        userId,
+        osm_id,
+        place_name,
+        longitude,
+        latitude,
+        wheelchair,
+        osm_type,
+        sub_type,
+        all_tags,
+        token,
+    ) {
         const response = await fetch(
             `${API_BASE_URL}/api/users/${userId}/favorites`,
             {
@@ -17,6 +28,10 @@ export const favoritesApi = {
                     place_name,
                     longitude,
                     latitude,
+                    wheelchair,
+                    osm_type,
+                    sub_type,
+                    all_tags,
                 }),
             },
         );

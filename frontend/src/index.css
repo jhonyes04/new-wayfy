@@ -77,7 +77,7 @@
     --wayfy-input-focus: var(--wayfy-green);
 
     /* ── Navbar ── */
-    --wayfy-navbar-bg: #ffffff;
+    --wayfy-navbar-bg: var(--wayfy-dark);
     --wayfy-navbar-text: var(--wayfy-text);
     --wayfy-navbar-border: var(--wayfy-border);
 

@@ -46,6 +46,10 @@ export const useFavorites = () => {
                     place_name,
                     osmData?.longitude,
                     osmData?.latitude,
+                    osmData?.wheelchair,
+                    osmData?.osm_type,
+                    osmData?.sub_type,
+                    osmData?.all_tags,
                     token,
                 );
 

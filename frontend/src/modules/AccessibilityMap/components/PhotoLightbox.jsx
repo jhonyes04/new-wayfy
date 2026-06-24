@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from 'react-bootstrap';
 
 export const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
@@ -20,10 +21,10 @@ export const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
         return () => window.removeEventListener('keydown', handleKey);
     }, [current]);
 
-    return (
+    return createPortal(
         <div
-            className="position-fixed top-0 start-0 w-100 h-100 z-3"
-            style={{ background: 'rgba(0,0,0,0.92)' }}
+            className="position-fixed top-0 start-0 w-100 h-100"
+            style={{ background: 'rgba(0,0,0,0.92)', zIndex: 9999 }}
             onClick={onClose}
         >
             <div
@@ -86,6 +87,7 @@ export const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
                     {current + 1} / {photos.length}
                 </span>
             )}
-        </div>
+        </div>,
+        document.body,
     );
 };
