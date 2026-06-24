@@ -30,7 +30,7 @@ const getStrength = (password) => {
 };
 
 const PasswordStrengthIndicator = ({ password }) => {
-    // if (!password) return null;
+    if (!password) return null;
 
     const { pct, label, variant } = getStrength(password);
 
