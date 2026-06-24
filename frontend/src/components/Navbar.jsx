@@ -1,12 +1,11 @@
-import urlLogoLight from '../assets/img/logo.png';
+import urlLogoLight from '../assets/img/logo2.png';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from 'react-bootstrap'
+import { Button } from 'react-bootstrap';
 import { ButtonMenu } from './ButtonMenu';
 import { UserAvatar } from '../modules/UserDashboard/components/UserAvatar';
 import { useAuth } from '../context/auth/AuthContext';
 import useTooltip from '../hooks/useTooltip';
-
 
 const menuElements = [
     { link: '/', label: 'Home', icon: 'fa-home' },
@@ -19,22 +18,22 @@ const menuElements = [
 
 export const Navbar = () => {
     const [mostrarMenu, setMostrarMenu] = useState(false);
-    const { user } = useAuth()
+    const { user } = useAuth();
 
     const tooltipRef = useTooltip({
         title: 'Mi panel',
         placement: 'bottom',
-        trigger: 'hover'
-    })
+        trigger: 'hover',
+    });
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm py-2">
+        <nav className="navbar navbar-expand-lg bg-dark">
             <div className="container-fluid container-lg">
                 <Link to={'/'} className="navbar-brand me-2">
                     <img
                         src={urlLogoLight}
                         alt="logo"
-                        width={90}
+                        width={100}
                         className="img-fluid"
                     />
                 </Link>
@@ -50,18 +49,22 @@ export const Navbar = () => {
                 </button>
 
                 <div className="d-flex align-items-center gap-2 gap-sm-3 ms-auto order-1 order-lg-3">
-                    {user
-                        ? (
-                            <Link to='/user-dashboard' className='text-decoration-none' ref={tooltipRef}>
-                                <UserAvatar />
-                            </Link>
-                        )
-                        : (
-                            <Link to='/login' className="btn btn-secondary btn-circle">
-                                <i className="fa-regular fa-user"></i>
-                            </Link>
-                        )
-                    }
+                    {user ? (
+                        <Link
+                            to="/user-dashboard"
+                            className="text-decoration-none"
+                            ref={tooltipRef}
+                        >
+                            <UserAvatar textColor="light" />
+                        </Link>
+                    ) : (
+                        <Link
+                            to="/login"
+                            className="btn btn-secondary btn-circle"
+                        >
+                            <i className="fa-regular fa-user"></i>
+                        </Link>
+                    )}
                 </div>
 
                 <div

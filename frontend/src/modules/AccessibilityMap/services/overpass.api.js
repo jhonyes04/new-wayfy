@@ -159,3 +159,27 @@ out skel qt;
         // console.warn('Error en fase 3:', err.message);
     }
 }
+
+export async function getElementById(osmId) {
+    const query = `
+[out:json][timeout:15];
+(
+  node(${osmId});
+  way(${osmId});
+  relation(${osmId});
+);
+out body;
+    `;
+
+    const elements = await queryOverpass(query);
+    const element = elements?.[0];
+
+    if (!element) return null;
+
+    return {
+        tags: element.tags || {},
+        lat: element.lat ?? element.center?.lat ?? null,
+        lon: element.lon ?? element.center?.lon ?? null,
+        type: element.type,
+    };
+}

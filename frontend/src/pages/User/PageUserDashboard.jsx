@@ -12,16 +12,22 @@ import {
 import { UserAvatar } from '../../modules/UserDashboard/components/UserAvatar';
 import useTooltip from '../../hooks/useTooltip';
 import { useAuth } from '../../context/auth/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SidebarContent } from '../../modules/UserDashboard/components/SidebarContent';
 import { PageUserProfile } from './PageUserProfile';
-import { FavoritesList } from '../../modules/AccessibilityMap/components/FavoritesList';
+import { PageUserFavorites } from './PageUserFavorites';
 
 export const PageUserDashboard = () => {
     const [showMobileMenu, setShowMobileMenu] = useState(false);
-    const [activeTab, setActiveTab] = useState('dashboard');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'dashboard';
     const { logout, user } = useAuth();
     const navigate = useNavigate();
+
+    const setActiveTab = (tab) => {
+        setSearchParams({ tab });
+        setShowMobileMenu(false);
+    };
 
     const tooltipRef = useTooltip({
         title: 'Cerrar sesión',
@@ -43,7 +49,6 @@ export const PageUserDashboard = () => {
 
     return (
         <div className="d-flex vw-100 overflow-hidden bg-light">
-            {/* IZQUIERDA */}
             <aside
                 className="d-none d-lg-block border-end border-light"
                 style={{ width: '260px', minWidth: '260px' }}
@@ -76,7 +81,6 @@ export const PageUserDashboard = () => {
                 </Offcanvas.Body>
             </Offcanvas>
 
-            {/* DERECHA */}
             <div className="d-flex flex-column flex-grow-1 overflow-hidden">
                 <header
                     className="d-block d-lg-none d-flex align-items-center justify-content-between bg-white border-bottom border-light px-4"
@@ -99,16 +103,13 @@ export const PageUserDashboard = () => {
                             <Row className="g-4">
                                 <Col xs={12} sm={6} lg={4}>
                                     <Card
-                                        className="border-light h-100 shadow-sm"
-                                        style={{ borderRadius: '16px' }}
+                                        className="border-light h-100 shadow-sm rounded-4"
+                                        // style={{ borderRadius: '16px' }}
                                     >
                                         <Card.Body className="p-4">
                                             <span
                                                 className="text-uppercase text-muted fw-bold"
-                                                style={{
-                                                    fontSize: '0.7rem',
-                                                    trackingMultiplier: '1.2',
-                                                }}
+                                                style={{ fontSize: '0.7rem' }}
                                             >
                                                 Consumo de API
                                             </span>
@@ -175,7 +176,7 @@ export const PageUserDashboard = () => {
 
                         {activeTab === 'profile' && <PageUserProfile />}
 
-                        {activeTab === 'favorites' && <FavoritesList />}
+                        {activeTab === 'favorites' && <PageUserFavorites />}
 
                         {!['dashboard', 'profile', 'favorites'].includes(
                             activeTab,

@@ -269,6 +269,10 @@ class UserController:
         place_name = data.get('place_name', None)
         longitude = data.get('longitude', None)
         latitude = data.get('latitude', None)
+        wheelchair = data.get('wheelchair', None)
+        osm_type = data.get('osm_type', None)
+        sub_type = data.get('sub_type', None)
+        all_tags = data.get('all_tags', {})
         
         existing = db.session.execute(
             select(UserFavorite).filter_by(user_id=user_id, osm_id=osm_id)
@@ -283,7 +287,11 @@ class UserController:
                 osm_id=osm_id,
                 place_name=place_name,
                 longitude=longitude,
-                latitude=latitude
+                latitude=latitude,
+                wheelchair=wheelchair,
+                osm_type=osm_type,
+                sub_type=sub_type,
+                all_tags=json.dumps(all_tags)
             )
             
             db.session.add(new_favorite)

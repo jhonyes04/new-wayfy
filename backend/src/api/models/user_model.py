@@ -50,6 +50,10 @@ class UserFavorite(db.Model):
     place_name: Mapped[str] = mapped_column(String(200), nullable=True)
     longitude: Mapped[float] = mapped_column(Float, nullable=True)
     latitude: Mapped[float] = mapped_column(Float, nullable=True)
+    wheelchair: Mapped[str] = mapped_column(String(20), nullable=True)
+    osm_type: Mapped[str] = mapped_column(String(20), nullable=True)
+    sub_type: Mapped[str] = mapped_column(String(100), nullable=True)
+    all_tags: Mapped[str] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     
     __table_args__ = (
@@ -63,5 +67,9 @@ class UserFavorite(db.Model):
             'place_name': self.place_name,
             'longitude': self.longitude,
             'latitude': self.latitude,
+            'wheelchair': self.wheelchair,
+            'osm_type': self.osm_type,
+            'sub_type': self.sub_type,
+            'all_tags': json.loads(self.all_tags) if self.all_tags else {},
             'created_at': self.created_at.isoformat()
         }

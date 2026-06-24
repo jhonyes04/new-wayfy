@@ -14,7 +14,6 @@ const useAccessibilityMap = () => {
         activeCategories,
     } = state;
 
-    // Reducido: Eliminamos 'partialElements' y unificamos 'isPositionReady' implícitamente
     const [userCoords, setUserCoords] = useState(null);
     const [geojson, setGeojson] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -23,13 +22,12 @@ const useAccessibilityMap = () => {
 
     const mapRef = useRef(null);
     const debounceRef = useRef(null);
-    const abortControllerRef = useRef(null)
-    const isLoadingRef = useRef(false)
-    const reloadRequestedRef = useRef(false)
+    const abortControllerRef = useRef(null);
+    const isLoadingRef = useRef(false);
+    const reloadRequestedRef = useRef(false);
 
     const elementsRef = useRef([]);
 
-    // Filtro de GeoJSON
     const filteredGeoJSON = useFilteredGeoJSON(
         geojson,
         activeFilters,
@@ -55,16 +53,20 @@ const useAccessibilityMap = () => {
                     'circle-radius': [
                         'step',
                         ['get', 'point_count'],
-                        18, 10,
-                        24, 50,
-                        32
+                        18,
+                        10,
+                        24,
+                        50,
+                        32,
                     ],
                     'circle-stroke-width': [
                         'step',
                         ['get', 'point_count'],
-                        3, 10,
-                        4, 50,
-                        5
+                        3,
+                        10,
+                        4,
+                        50,
+                        5,
                     ],
                     'circle-stroke-color': [
                         'step',
@@ -73,7 +75,7 @@ const useAccessibilityMap = () => {
                         10,
                         'rgba(56, 189, 248, 0.5)',
                         50,
-                        'rgba(236, 142, 142, 0.5)'
+                        'rgba(236, 142, 142, 0.5)',
                     ],
                     'circle-blur': 0.0001,
                 },
@@ -89,7 +91,7 @@ const useAccessibilityMap = () => {
                         'DIN Offc Pro Medium',
                         'Arial Unicode MS Bold',
                     ],
-                    'text-allow-overlap': true
+                    'text-allow-overlap': true,
                 },
                 paint: { 'text-color': '#ffffff' },
             },
@@ -112,7 +114,7 @@ const useAccessibilityMap = () => {
                     ],
                     'circle-stroke-width': 2,
                     'circle-stroke-color': '#ffffff',
-                    'circle-pitch-alignment': 'map'
+                    'circle-pitch-alignment': 'map',
                 },
             },
         }),
@@ -180,9 +182,6 @@ const useAccessibilityMap = () => {
         }
     }, [isPositionReady]);
 
-
-
-    // OPTIMIZACIÓN: Unificado Geolocalización inicial + Carga de datos inicial cuando el mapa/posición estén listos
     useEffect(() => {
         if (selectedLocation) return;
 
@@ -207,16 +206,15 @@ const useAccessibilityMap = () => {
                 },
                 (err) => {
                     console.error('Error de geolocalización:', err);
-                    setUserCoords({ longitude: 0, latitude: 0 }); // Fallback para marcar la posición como resuelta
+                    setUserCoords({ longitude: 0, latitude: 0 });
                 },
                 { enableHighAccuracy: true, timeout: 5000 },
             );
         } else {
             setUserCoords({ longitude: 0, latitude: 0 });
         }
-    }, []); // Solo se ejecuta al montar
+    }, []);
 
-    // Disparador automático de loadData cuando la posición inicial/seleccionada esté garantizada
     useEffect(() => {
         if (isPositionReady && mapRef.current) {
             loadData();
@@ -230,20 +228,17 @@ const useAccessibilityMap = () => {
         };
     }, []);
 
-
-    // FlyTo al seleccionar ubicación externa
     useEffect(() => {
         if (selectedLocation && mapRef.current) {
             mapRef.current.flyTo({
                 center: [selectedLocation.longitude, selectedLocation.latitude],
-                zoom: 14,
+                zoom: selectedLocation.zoom || 16,
                 essential: true,
-                duration: 2000,
+                duration: 1500,
             });
         }
-    }, [selectedLocation]);
+    }, [selectedLocation, isPositionReady]);
 
-    // Ocultar errores automáticamente después de 2s
     useEffect(() => {
         const zoomErrorMessage = 'Acércate más para ver lugares accesibles.';
         if (error && error !== zoomErrorMessage) {
@@ -251,6 +246,17 @@ const useAccessibilityMap = () => {
             return () => clearTimeout(timer);
         }
     }, [error]);
+
+    const handleMapLoad = useCallback(() => {
+        if (selectedLocation) {
+            mapRef.current?.flyTo({
+                center: [selectedLocation.longitude, selectedLocation.latitude],
+                zoom: selectedLocation.zoom || 16,
+                essential: true,
+                duration: 1500,
+            });
+        }
+    }, [selectedLocation]);
 
     const handleMove = useCallback(
         (evt) => updateLocation(evt.viewState),
@@ -320,6 +326,7 @@ const useAccessibilityMap = () => {
             handleMove,
             handleMoveEnd,
             handleClick,
+            handleMapLoad,
         },
         mapRef,
     };

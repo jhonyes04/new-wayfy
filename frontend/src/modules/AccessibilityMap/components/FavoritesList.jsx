@@ -1,19 +1,50 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+    Spinner,
+    Card,
+    Badge,
+    Button,
+    ListGroup,
+    Stack,
+    Row,
+    Col,
+} from 'react-bootstrap';
 import { useAuth } from '../../../context/auth/AuthContext';
 import { useFavorites } from '../hooks/useFavorites';
-import { favoritesApi } from '../services/favorites.api';
 import useGlobalReducer from '../../../hooks/useGlobalReducer';
-import { Alert, Spinner, Card, ListGroup, Button } from 'react-bootstrap';
+import { favoritesApi } from '../services/favorites.api';
+import { FavoriteCard } from './FavoriteCard';
+import {
+    translateCategory,
+    getCategoryIcon,
+} from '../utils/translations/OSM_TRANSLATIONS';
+import { toast } from 'react-toastify';
+
+const WHEELCHAIR_LABELS = {
+    yes: { label: 'Accesible', color: 'success', icon: 'fa-wheelchair-move' },
+    limited: {
+        label: 'Parcialmente accesible',
+        color: 'warning',
+        icon: 'fa-triangle-exclamation',
+    },
+    no: { label: 'No accesible', color: 'danger', icon: 'fa-ban' },
+    unknown: {
+        label: 'Desconocido',
+        color: 'secondary',
+        icon: 'fa-circle-question',
+    },
+};
 
 export const FavoritesList = () => {
     const { user, token } = useAuth();
-    const { removeFavorite, loading: favoriteLoading } = useFavorites();
+    const { removeFavorite } = useFavorites();
     const { dispatch } = useGlobalReducer();
     const navigate = useNavigate();
     const [favorites, setFavorites] = useState([]);
     const [loadingFavorites, setLoadingFavorites] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedFavorite, setSelectedFavorite] = useState(null);
 
     useEffect(() => {
         if (!user || !token) return;
@@ -21,15 +52,14 @@ export const FavoritesList = () => {
         const fetchFavorites = async () => {
             setLoadingFavorites(true);
             setError(null);
-
             try {
                 const data = await favoritesApi.getUserFavorites(
                     user.id,
                     token,
                 );
                 setFavorites(data.favorites || []);
-            } catch (error) {
-                setError(error.message);
+            } catch (err) {
+                setError(err.message);
             } finally {
                 setLoadingFavorites(false);
             }
@@ -38,13 +68,13 @@ export const FavoritesList = () => {
         fetchFavorites();
     }, [user, token]);
 
-    const handleRemoveFavorite = async (osm_id) => {
+    const handleRemove = async (osm_id) => {
         await removeFavorite(osm_id);
-        setFavorites(favorites.filter((f) => f.osm_id !== osm_id)); // ← corregido oms_id → osm_id
+        setFavorites((prev) => prev.filter((f) => f.osm_id !== osm_id));
+        if (selectedFavorite?.osm_id === osm_id) setSelectedFavorite(null);
     };
 
     const handleGoToMap = (favorite) => {
-        // Centrar el mapa en las coordenadas del favorito
         if (favorite.longitude && favorite.latitude) {
             dispatch({
                 type: 'UPDATE_LOCATION',
@@ -54,105 +84,180 @@ export const FavoritesList = () => {
                     zoom: 17,
                 },
             });
+            dispatch({
+                type: 'SET_SELECTED_LOCATION',
+                payload: {
+                    longitude: favorite.longitude,
+                    latitude: favorite.latitude,
+                    zoom: 17,
+                },
+            });
         }
-
-        // Construir un feature mínimo para mostrar en AccessibilityDetails
         dispatch({
             type: 'SET_SELECTED_FEATURE',
             payload: {
                 properties: {
                     id: favorite.osm_id,
                     name: favorite.place_name,
-                    osm_type: 'node',
-                    wheelchair: 'unknown',
-                    sub_type: null,
-                    all_tags: '{}',
+                    osm_type: favorite.osm_type || 'node',
+                    wheelchair: favorite.wheelchair || 'unknown',
+                    sub_type: favorite.sub_type || null,
+                    all_tags: favorite.all_tags || {},
                 },
                 geometry: {
                     coordinates: [favorite.longitude, favorite.latitude],
                 },
             },
         });
-
-        navigate('/map'); // ← ajusta la ruta según tu router
+        navigate('/map');
     };
 
     if (!user) {
-        return (
-            <Alert variant="info" className="mt-3">
-                <i className="fa-solid fa-lock me-2"></i>
-                Debes estar autenticado para ver tus favoritos
-            </Alert>
-        );
+        toast.warn('Debes estar autenticado para ver tus favoritos');
+        return null;
     }
 
     if (loadingFavorites) {
         return (
-            <div className="d-flex justify-content-center align-items-center p-5">
-                <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Cargando...</span>
-                </Spinner>
-            </div>
+            <Row className="justify-content-center py-5">
+                <Col xs="auto">
+                    <Spinner animation="border" role="status">
+                        <span className="visually-hidden">Cargando...</span>
+                    </Spinner>
+                </Col>
+            </Row>
         );
     }
 
-    if (error) return <Alert variant="danger">{error}</Alert>;
+    if (error) {
+        toast.error(error);
+        return null;
+    }
 
     if (favorites.length === 0) {
         return (
-            // ← añadido return
-            <Alert variant="secondary" className="mt-3">
-                <i className="fa-solid fa-heart me-2"></i>
-                No tienes favoritos aún. ¡Agrega algunos lugares!
-            </Alert>
+            <Card className="border-0 shadow-sm text-center py-5">
+                <Card.Body>
+                    <i className="fa-regular fa-heart fa-3x text-danger mb-3 d-block"></i>
+                    <Card.Text className="text-muted">
+                        No tienes favoritos aún. ¡Agrega algunos lugares!
+                    </Card.Text>
+                </Card.Body>
+            </Card>
         );
     }
 
     return (
-        <Card className="mt-3">
-            <Card.Header className="bg-dark text-white d-flex justify-content-between align-items-center">
-                <h5 className="m-0">
-                    <i className="fa-solid fa-heart me-2 text-danger"></i>
-                    Mis Favoritos ({favorites.length})
-                </h5>
-            </Card.Header>
-            <ListGroup variant="flush">
-                {favorites.map((favorite) => (
-                    <ListGroup.Item
-                        key={favorite.id}
-                        className="d-flex justify-content-between align-items-center"
-                    >
-                        <div
-                            style={{ cursor: 'pointer', flex: 1 }}
-                            onClick={() => handleGoToMap(favorite)}
-                        >
-                            <div className="fw-bold text-dark">
-                                {favorite.place_name || 'Lugar sin nombre'}
-                            </div>
-                            <div className="small text-muted">
-                                <i className="fa-solid fa-location-dot me-1"></i>
-                                OSM ID: {favorite.osm_id}
-                            </div>
-                            <div className="small text-muted">
-                                {new Date(
-                                    favorite.created_at,
-                                ).toLocaleDateString('es-ES')}
-                            </div>
-                        </div>
-                        <Button
-                            variant="outline-danger"
-                            size="sm"
-                            onClick={() =>
-                                handleRemoveFavorite(favorite.osm_id)
-                            }
-                            disabled={favoriteLoading}
-                            className="ms-2"
-                        >
-                            <i className="fa-solid fa-trash"></i>
-                        </Button>
-                    </ListGroup.Item>
-                ))}
-            </ListGroup>
-        </Card>
+        <>
+            <Stack direction="horizontal" gap={2} className="mb-3">
+                <i className="fa-solid fa-heart text-danger"></i>
+                <h4 className="text-primary m-0">Mis Favoritos</h4>
+                <Badge bg="secondary" pill>
+                    {favorites.length}
+                </Badge>
+            </Stack>
+
+            <Card className="shadow-sm border-0">
+                <ListGroup variant="flush">
+                    {favorites.map((favorite) => {
+                        const wc =
+                            WHEELCHAIR_LABELS[favorite.wheelchair] ||
+                            WHEELCHAIR_LABELS.unknown;
+
+                        return (
+                            <ListGroup.Item
+                                key={favorite.id}
+                                className="py-3 px-3"
+                            >
+                                <Row className="align-items-center g-2">
+                                    <Col xs="auto" className="d-none d-sm-flex">
+                                        <div
+                                            className={`bg-${wc.color} rounded-circle d-flex align-items-center justify-content-center text-white`}
+                                            style={{
+                                                width: '36px',
+                                                height: '36px',
+                                            }}
+                                        >
+                                            <i
+                                                className={`fa-solid ${wc.icon} small`}
+                                            ></i>
+                                        </div>
+                                    </Col>
+
+                                    <Col>
+                                        <div className="fw-bold text-truncate">
+                                            {favorite.place_name ||
+                                                'Lugar sin nombre'}
+                                        </div>
+                                        <Stack
+                                            direction="horizontal"
+                                            gap={2}
+                                            className="flex-wrap mt-1"
+                                        >
+                                            <Badge
+                                                bg="dark"
+                                                // className="small"
+                                            >
+                                                <i
+                                                    className={`fa-solid ${getCategoryIcon(favorite.sub_type)} me-2`}
+                                                ></i>
+                                                {translateCategory(
+                                                    favorite.sub_type,
+                                                )}
+                                            </Badge>
+                                        </Stack>
+                                    </Col>
+
+                                    <Col xs="auto">
+                                        <Stack direction="horizontal" gap={1}>
+                                            <Button
+                                                variant="outline-primary"
+                                                size="sm"
+                                                onClick={() =>
+                                                    setSelectedFavorite(
+                                                        favorite,
+                                                    )
+                                                }
+                                            >
+                                                <i className="fa-solid fa-circle-info"></i>
+                                            </Button>
+                                            <Button
+                                                variant="outline-success"
+                                                size="sm"
+                                                onClick={() =>
+                                                    handleGoToMap(favorite)
+                                                }
+                                            >
+                                                <i className="fa-solid fa-map-location-dot"></i>
+                                            </Button>
+                                            <Button
+                                                variant="outline-danger"
+                                                size="sm"
+                                                onClick={() =>
+                                                    handleRemove(
+                                                        favorite.osm_id,
+                                                    )
+                                                }
+                                            >
+                                                <i className="fa-solid fa-trash"></i>
+                                            </Button>
+                                        </Stack>
+                                    </Col>
+                                </Row>
+                            </ListGroup.Item>
+                        );
+                    })}
+                </ListGroup>
+            </Card>
+
+            {selectedFavorite && (
+                <FavoriteCard
+                    favorite={selectedFavorite}
+                    onClose={() => setSelectedFavorite(null)}
+                    onGoToMap={handleGoToMap}
+                    onRemoved={handleRemove}
+                />
+            )}
+        </>
     );
 };

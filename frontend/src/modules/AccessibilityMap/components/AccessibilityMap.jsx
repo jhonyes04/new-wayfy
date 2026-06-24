@@ -76,6 +76,7 @@ export const AccessibilityMap = () => {
                 onClick={actions.handleClick}
                 onMouseEnter={() => actions.setCursor('pointer')}
                 onMouseLeave={() => actions.setCursor('grab')}
+                onLoad={actions.handleMapLoad}
                 mapStyle="mapbox://styles/mapbox/streets-v12"
                 mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
                 interactiveLayerIds={['clusters', 'unclustered-point']}
