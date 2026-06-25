@@ -16,6 +16,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SidebarContent } from '../../modules/UserDashboard/components/SidebarContent';
 import { PageUserProfile } from './PageUserProfile';
 import { PageUserFavorites } from './PageUserFavorites';
+import { PageUserTrips } from './PageUserTrips';
+import { TripDetail } from '../../modules/Trips/components/TripDetail';
 
 export const PageUserDashboard = () => {
     const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -178,9 +180,21 @@ export const PageUserDashboard = () => {
 
                         {activeTab === 'favorites' && <PageUserFavorites />}
 
-                        {!['dashboard', 'profile', 'favorites'].includes(
-                            activeTab,
-                        ) && (
+                        {activeTab === 'trips' && <PageUserTrips />}
+
+                        {activeTab === 'trip-detail' && (
+                            <TripDetail
+                                tripId={Number(searchParams.get('tripId'))}
+                            />
+                        )}
+
+                        {![
+                            'dashboard',
+                            'profile',
+                            'favorites',
+                            'trips',
+                            'trip-detail',
+                        ].includes(activeTab) && (
                             <div
                                 className="d-flex align-items-center justify-content-center border border-2 border-dashed text-muted"
                                 style={{

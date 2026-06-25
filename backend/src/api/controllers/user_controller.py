@@ -180,7 +180,6 @@ class UserController:
         
     @staticmethod
     def delete(user_id: int, current_user_id: int, current_user_is_admin: bool):
-        # Condicional corregido aquí:
         if not current_user_is_admin:
             if int(user_id) != int(current_user_id):
                 return jsonify({'msg': 'No tienes permiso para eliminar este usuario'}), 403
