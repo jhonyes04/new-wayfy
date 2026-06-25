@@ -17,6 +17,9 @@ import { ProtectedRoute } from '../components/ProtectedRoute';
 import { PageUserDashboard } from '../pages/User/PageUserDashboard';
 import { PageUserProfile } from '../pages/User/PageUserProfile';
 import { PageUserFavorites } from '../pages/User/PageUserFavorites';
+import { PageUserTrips } from '../pages/User/PageUserTrips';
+import { PagePublicTrips } from '../pages/PagePublicTrips';
+import { PageUserTripDetail } from '../pages/User/PageUserTripDetail';
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -39,6 +42,9 @@ export const router = createBrowserRouter(
                 <Route path="/user-dashboard" element={<PageUserDashboard />} />
                 <Route path="/user-profile" element={<PageUserProfile />} />
                 <Route path="/user-favorites" element={<PageUserFavorites />} />
+                <Route path="/trips" element={<PageUserTrips />} />
+                <Route path="/trips/public" element={<PagePublicTrips />} />
+                <Route path="/trips/:tripId" element={<PageUserTripDetail />} />
             </Route>
         </Route>,
     ),
