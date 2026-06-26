@@ -10,7 +10,7 @@ export const SecuritySection = ({
     return (
         <section>
             <h5 className="text-primary mb-3 border-bottom pb-2">
-                <i className="fa-solid fa-lock text-muted me-2"></i>Seguridad
+                <i className="fa-solid fa-lock me-2"></i>Seguridad
             </h5>
             <Row className="g-3">
                 <Col xs={12} md={6}>

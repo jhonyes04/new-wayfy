@@ -630,7 +630,6 @@ img,
 .card,
 .navbar,
 .form-control,
-.btn,
 .alert,
 .modal-content {
     transition: all 0.5s ease-in-out;
@@ -638,54 +637,4 @@ img,
         color 0.35s ease,
         border-color 0.35s ease,
         box-shadow 0.35s ease; */
-}
-
-/* ============================================================
-   SWITCH (Theme + Shortcut)
-   ============================================================ */
-
-.switch-toggle {
-    width: 55px;
-    height: 26px;
-    background: var(--wayfy-surface-alt);
-    border: 2px solid var(--wayfy-gray-active);
-    border-radius: 50px;
-    padding: 0;
-    cursor: pointer;
-    position: relative;
-    transition:
-        background 0.25s ease,
-        border-color 0.25s ease;
-    display: flex;
-    align-items: center;
-}
-
-.switch-toggle .switch-slider {
-    width: 22px;
-    height: 22px;
-    background: var(--wayfy-blue);
-    color: var(--wayfy-white);
-    border-radius: 50%;
-    position: absolute;
-    left: 1px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: grid;
-    place-items: center;
-    font-size: 0.85rem;
-    transition:
-        transform 0.25s ease,
-        background 0.25s ease;
-}
-
-/* Estado activo */
-.switch-toggle.active .switch-slider {
-    transform: translate(28px, -50%);
-    background: var(--wayfy-blue);
-    color: var(--wayfy-white);
-}
-
-/* Hover */
-.switch-toggle:hover {
-    border-color: var(--wayfy-primary);
 }

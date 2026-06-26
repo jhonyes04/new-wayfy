@@ -18,7 +18,7 @@ export const MobilitySection = ({ selectedMobility, toggleMobility }) => {
     return (
         <section>
             <h5 className="text-primary mb-3 border-bottom pb-2">
-                <i className="fa-solid fa-wheelchair-move me-2 text-muted"></i>
+                <i className="fa-solid fa-wheelchair-move me-2"></i>
                 Condiciones de Movilidad
             </h5>
             <div className="d-flex flex-column gap-2">

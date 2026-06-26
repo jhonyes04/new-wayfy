@@ -299,7 +299,7 @@ export const PageRegister = () => {
 
                                         <Button
                                             type="submit"
-                                            variant="success"
+                                            variant="primary"
                                             className="w-100 py-2.5 fw-bold rounded-3 shadow-sm mt-3"
                                         >
                                             Continuar
@@ -360,7 +360,7 @@ export const PageRegister = () => {
                                             </Button>
                                             <Button
                                                 type="submit"
-                                                variant="success"
+                                                variant="primary"
                                                 className="w-50 py-2.5 fw-bold rounded-3 shadow-sm"
                                             >
                                                 <i className="fa-solid fa-user-plus me-2"></i>

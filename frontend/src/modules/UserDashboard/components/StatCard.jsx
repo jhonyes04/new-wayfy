@@ -9,22 +9,24 @@ export const StatCard = ({
 }) => {
     return (
         <Card className="shadow-sm h-100 border-start border-1">
-            <Card.Body className="text-center p-4">
+            <Card.Body className="text-center p-4 d-flex flex-column h-100">
                 <i className={`${icon} text-${variant} fa-3x`}></i>
 
-                <div>
+                <div className="d-flex flex-column flex-grow-1">
                     <h4 className="text-primary">{label}</h4>
-                    {loading ? (
-                        <Spinner
-                            animation="border"
-                            size="sm"
-                            variant={variant}
-                        />
-                    ) : (
-                        <Badge bg="dark" pill className="fs-2 fw-bold">
-                            {count}
-                        </Badge>
-                    )}
+                    <div className="mt-auto">
+                        {loading ? (
+                            <Spinner
+                                animation="border"
+                                size="sm"
+                                variant={variant}
+                            />
+                        ) : (
+                            <div className="border border-2 border-dark rounded-pill bg-light fs-2 fw-bold">
+                                {count}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </Card.Body>
         </Card>

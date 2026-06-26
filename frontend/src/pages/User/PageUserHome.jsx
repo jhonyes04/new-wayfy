@@ -11,13 +11,16 @@ export const PageUserHome = () => {
     const totalForks = trips.reduce((sum, t) => sum + (t.fork_count ?? 0), 0);
 
     return (
-        <Container className="py-4">
-            <h4 className="mb-4">Resumen</h4>
+        <Container>
+            <div className="d-flex align-items-center text-primary mb-4">
+                <i className="fa-solid fa-chart-pie fa-2x me-1"></i>
+                <h3 className="m-0">Resumen</h3>
+            </div>
             <Row className="g-4 mb-4">
                 <Col xs={12} sm={6} lg={4}>
                     <StatCard
                         icon="fa-solid fa-heart"
-                        label="Favoritos guardados"
+                        label="Favoritos"
                         count={state.favorites?.length ?? 0}
                         variant="danger"
                     />
@@ -25,7 +28,7 @@ export const PageUserHome = () => {
                 <Col xs={12} sm={6} lg={4}>
                     <StatCard
                         icon="fa-solid fa-map"
-                        label="Viajes creados"
+                        label="Viajes"
                         count={trips?.length ?? 0}
                         loading={loadingTrips}
                         variant="primary"
@@ -34,7 +37,7 @@ export const PageUserHome = () => {
                 <Col xs={12} sm={6} lg={4}>
                     <StatCard
                         icon="fa-solid fa-code-fork"
-                        label="Forks totales"
+                        label="Forks"
                         count={totalForks}
                         loading={loadingTrips}
                         variant="success"
@@ -42,7 +45,7 @@ export const PageUserHome = () => {
                 </Col>
             </Row>
 
-            <h5 className="mb-3">Forks por viaje</h5>
+            <h5 className="text-primary mb-3">Viajes Forkeados</h5>
             {loadingTrips ? (
                 <Spinner animation="border" size="sm" />
             ) : (
@@ -55,41 +58,25 @@ export const PageUserHome = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {trips.map((trip) => (
-                            <tr key={trip.id}>
-                                <td>{trip.title}</td>
-                                <td className="text-center">
-                                    <Badge
-                                        bg={
-                                            trip.is_public
-                                                ? 'success'
-                                                : 'secondary'
-                                        }
-                                        pill
-                                    >
-                                        <i
-                                            className={`fa-solid ${trip.is_public ? 'fa-globe' : 'fa-lock'} me-1`}
-                                        ></i>
-                                        {trip.is_public ? 'Público' : 'Privado'}
-                                    </Badge>
-                                </td>
-                                <td className="text-center">
-                                    <Badge
-                                        bg={
-                                            trip.fork_count
-                                                ? 'success'
-                                                : 'light'
-                                        }
-                                        text={
-                                            trip.fork_count ? 'white' : 'muted'
-                                        }
-                                    >
-                                        <i className="fa-solid fa-code-fork me-1"></i>
-                                        {trip.fork_count ?? 0}
-                                    </Badge>
-                                </td>
-                            </tr>
-                        ))}
+                        {trips
+                            .filter((t) => t.is_public)
+                            .map((trip) => (
+                                <tr key={trip.id}>
+                                    <td>{trip.title}</td>
+                                    <td className="text-center">
+                                        <Badge bg="success" pill>
+                                            <i className="fa-solid fa-globe me-1"></i>
+                                            Público
+                                        </Badge>
+                                    </td>
+                                    <td className="text-center">
+                                        <Badge bg="success">
+                                            <i className="fa-solid fa-code-fork me-1"></i>
+                                            {trip.fork_count ?? 0}
+                                        </Badge>
+                                    </td>
+                                </tr>
+                            ))}
                     </tbody>
                 </Table>
             )}

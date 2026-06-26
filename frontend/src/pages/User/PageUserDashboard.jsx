@@ -10,7 +10,6 @@ import {
     ProgressBar,
 } from 'react-bootstrap';
 import { UserAvatar } from '../../modules/UserDashboard/components/UserAvatar';
-import useTooltip from '../../hooks/useTooltip';
 import { useAuth } from '../../context/auth/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SidebarContent } from '../../modules/UserDashboard/components/SidebarContent';
@@ -32,23 +31,12 @@ export const PageUserDashboard = () => {
         setShowMobileMenu(false);
     };
 
-    const tooltipRef = useTooltip({
-        title: 'Cerrar sesión',
-        placement: 'bottom',
-        trigger: 'hover',
-    });
-
     const menuItems = [
-        { id: 'dashboard', label: 'Inicio', iconClass: 'fa-chart-pie' },
+        { id: 'dashboard', label: 'Resumen', iconClass: 'fa-chart-pie' },
         { id: 'profile', label: 'Mi Perfil', iconClass: 'fa-user' },
-        { id: 'trips', label: 'Mis viajes', iconClass: 'fa-route' },
+        { id: 'trips', label: 'Mis viajes', iconClass: 'fa-map' },
         { id: 'favorites', label: 'Favoritos', iconClass: 'fa-heart' },
     ];
-
-    const handle_logout = () => {
-        logout();
-        navigate('/');
-    };
 
     return (
         <div className="d-flex vw-100 overflow-hidden bg-light">
@@ -61,8 +49,6 @@ export const PageUserDashboard = () => {
                     setActiveTab={setActiveTab}
                     setShowMobileMenu={setShowMobileMenu}
                     menuItems={menuItems}
-                    handle_logout={handle_logout}
-                    tooltipRef={tooltipRef}
                 />
             </aside>
 
@@ -78,8 +64,6 @@ export const PageUserDashboard = () => {
                         setActiveTab={setActiveTab}
                         setShowMobileMenu={setShowMobileMenu}
                         menuItems={menuItems}
-                        handle_logout={handle_logout}
-                        tooltipRef={tooltipRef}
                     />
                 </Offcanvas.Body>
             </Offcanvas>

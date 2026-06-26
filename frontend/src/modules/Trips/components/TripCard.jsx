@@ -83,12 +83,6 @@ export const TripCard = ({
                         {trip.total_days}{' '}
                         {trip.total_days === 1 ? 'día' : 'días'}
                     </Badge>
-                    {/* {user && trip.original_trip_id && (
-                        <Badge bg="info" text="dark" className="ms-auto">
-                            <i className="fa-solid fa-code-fork me-1"></i>
-                            Copiado
-                        </Badge>
-                    )} */}
                 </Stack>
                 <Badge
                     bg="primary"

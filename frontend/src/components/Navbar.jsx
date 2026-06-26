@@ -1,11 +1,10 @@
 import urlLogoLight from '../assets/img/logo2.png';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
+import { Dropdown } from 'react-bootstrap';
 import { ButtonMenu } from './ButtonMenu';
 import { UserAvatar } from '../modules/UserDashboard/components/UserAvatar';
 import { useAuth } from '../context/auth/AuthContext';
-import useTooltip from '../hooks/useTooltip';
 
 const menuElements = [
     { link: '/', label: 'Home', icon: 'fa-home' },
@@ -19,13 +18,13 @@ const menuElements = [
 
 export const Navbar = () => {
     const [mostrarMenu, setMostrarMenu] = useState(false);
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
-    const tooltipRef = useTooltip({
-        title: 'Mi panel',
-        placement: 'bottom',
-        trigger: 'hover',
-    });
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     return (
         <nav className="navbar navbar-expand-lg bg-dark">
@@ -51,13 +50,36 @@ export const Navbar = () => {
 
                 <div className="d-flex align-items-center gap-2 gap-sm-3 ms-auto order-1 order-lg-3">
                     {user ? (
-                        <Link
-                            to="/user-dashboard"
-                            className="text-decoration-none"
-                            ref={tooltipRef}
-                        >
-                            <UserAvatar textColor="light" />
-                        </Link>
+                        <Dropdown align="end">
+                            <Dropdown.Toggle
+                                as="div"
+                                style={{ cursor: 'pointer' }}
+                                bsPrefix="dropdown-toggle-custom"
+                            >
+                                <UserAvatar textColor="light" />
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu
+                                variant="dark"
+                                className="bg-dark mt-2"
+                            >
+                                <Dropdown.Item
+                                    as={Link}
+                                    to="/user-dashboard"
+                                    className="fw-bold"
+                                >
+                                    <i className="fa-solid fa-gauge me-2"></i>
+                                    Mi panel
+                                </Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item
+                                    onClick={handleLogout}
+                                    className="text-danger fw-bold"
+                                >
+                                    <i className="fa-solid fa-right-from-bracket me-2"></i>
+                                    Cerrar sesión
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
                     ) : (
                         <Link
                             to="/login"
@@ -72,7 +94,6 @@ export const Navbar = () => {
                     className={`collapse navbar-collapse order-3 order-lg-2 ${mostrarMenu ? 'show' : ''}`}
                     id="navbarContent"
                 >
-                    {/* Removido flex-row forzado; ahora es vertical en móvil (nav) y horizontal en desktop (lg) */}
                     <div className="navbar-nav flex-row flex-wrap justify-content-center mx-auto gap-2 gap-lg-4 mt-3 mt-lg-0">
                         {menuElements.map((element, index) => (
                             <ButtonMenu

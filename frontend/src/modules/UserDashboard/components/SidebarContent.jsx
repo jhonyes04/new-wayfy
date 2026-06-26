@@ -3,25 +3,11 @@ import { Nav, Button } from 'react-bootstrap';
 import { UserAvatar } from './UserAvatar';
 
 export const SidebarContent = memo(
-    ({
-        activeTab,
-        setActiveTab,
-        setShowMobileMenu,
-        menuItems,
-        handle_logout,
-        tooltipRef,
-    }) => {
+    ({ activeTab, setActiveTab, setShowMobileMenu, menuItems }) => {
         return (
             <div className="d-flex flex-column h-100 p-3 bg-dark">
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <UserAvatar textColor="light" />
-
-                    <i
-                        ref={tooltipRef}
-                        className="fa-solid fa-right-from-bracket fs-4 text-danger"
-                        style={{ cursor: 'pointer' }}
-                        onClick={handle_logout}
-                    ></i>
                 </div>
 
                 <Nav className="flex-column flex-grow-1 gap-1">
@@ -41,7 +27,9 @@ export const SidebarContent = memo(
                                 <i
                                     className={`fa-solid ${item.iconClass} fa-fw fs-5`}
                                 ></i>
-                                <span className="small fw-medium">
+                                <span
+                                    className={`small ${isActive ? 'fw-bold' : 'fw-medium'}`}
+                                >
                                     {item.label}
                                 </span>
                             </Button>
