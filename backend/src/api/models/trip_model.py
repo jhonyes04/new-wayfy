@@ -21,13 +21,20 @@ class Trip(db.Model):
     forks: Mapped[list['Trip']] = relationship('Trip', foreign_keys='Trip.original_trip_id')
 
     def serialize(self, include_days: bool = False) -> dict:
+        from api.models.user_model import User
+        author = db.session.get(User, self.user_id)
         data = {
             'id': self.id,
             'user_id': self.user_id,
+            'author': {
+                'firstname': author.firstname if author else None,
+                'lastname': author.lastname if author else None
+            },
             'title': self.title,
             'description': self.description,
             'is_public': self.is_public,
             'original_trip_id': self.original_trip_id,
+            'fork_count': len(self.forks),
             'total_days': len(self.days),
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),

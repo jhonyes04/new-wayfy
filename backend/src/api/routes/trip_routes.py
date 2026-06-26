@@ -16,12 +16,12 @@ def handle_get_my_trips():
     return TripController.get_my_trips()
 
 @trip_bp.route('/public', methods=['GET'])
-@jwt_required()
+@jwt_required(optional=True)
 def handle_get_public_trips():
     return TripController.get_public_trips()
 
 @trip_bp.route('/<int:trip_id>', methods=['GET'])
-@jwt_required()
+@jwt_required(optional=True)
 def handle_get_trip(trip_id):
     return TripController.get_trip(trip_id)
 

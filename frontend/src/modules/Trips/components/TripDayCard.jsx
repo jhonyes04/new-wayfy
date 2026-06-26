@@ -1,5 +1,6 @@
 import { Badge, Button, Card, ListGroup, Stack } from 'react-bootstrap';
 import { TooltipButton } from '../../../components/TooltipButton';
+import { getCategoryStyle } from '../../AccessibilityMap/utils/translations/OSM_TRANSLATIONS';
 
 export const TripDayCard = ({
     day,
@@ -38,41 +39,54 @@ export const TripDayCard = ({
                     Sin lugares asignados
                 </ListGroup.Item>
             ) : (
-                day.places.map((place) => (
-                    <ListGroup.Item key={place.id} className="py-2 px-3">
-                        <Stack direction="horizontal" gap={2}>
-                            <i className="fa-solid fa-location-dot text-danger"></i>
-                            <span className="flex-grow-1 small fw-semibold text-truncate">
-                                {place.place_name}
-                            </span>
-                            {place.visit_time && (
-                                <Badge bg="light" text="dark" className="small">
-                                    <i className="fa-solid fa-clock me-1"></i>
-                                    {place.visit_time}
-                                    {place.visit_time_end &&
-                                        ` - ${place.visit_time_end}`}
-                                </Badge>
+                day.places.map((place) => {
+                    const { icon, color } = getCategoryStyle(place.sub_type);
+
+                    return (
+                        <ListGroup.Item key={place.id} className="py-2 px-3">
+                            <Stack direction="horizontal" gap={2}>
+                                <i
+                                    className={`fa-solid ${icon}`}
+                                    style={{ color }}
+                                ></i>
+                                <span className="flex-grow-1 small fw-semibold text-truncate">
+                                    {place.place_name}
+                                </span>
+                                {place.visit_time && (
+                                    <Badge
+                                        bg="info"
+                                        text="dark"
+                                        className="small justify-content-between"
+                                        style={{ minWidth: '120px' }}
+                                    >
+                                        <i className="fa-solid fa-clock me-1"></i>
+                                        {place.visit_time}
+                                        {place.visit_time_end &&
+                                            ` - ${place.visit_time_end}`}
+                                    </Badge>
+                                )}
+                                {isOwner && (
+                                    <TooltipButton
+                                        variant="outline-danger"
+                                        size="sm"
+                                        className="border-0"
+                                        tooltip="Eliminar lugar"
+                                        onClick={() =>
+                                            onDeletePlace(day.id, place.id)
+                                        }
+                                    >
+                                        <i className="fa-solid fa-xmark"></i>
+                                    </TooltipButton>
+                                )}
+                            </Stack>
+                            {place.notes && (
+                                <div className="text-muted small mt-1 ms-4">
+                                    {place.notes}
+                                </div>
                             )}
-                            {isOwner && (
-                                <TooltipButton
-                                    variant="outline-danger"
-                                    size="sm"
-                                    tooltip="Eliminar lugar"
-                                    onClick={() =>
-                                        onDeletePlace(day.id, place.id)
-                                    }
-                                >
-                                    <i className="fa-solid fa-xmark"></i>
-                                </TooltipButton>
-                            )}
-                        </Stack>
-                        {place.notes && (
-                            <div className="text-muted small mt-1 ms-4">
-                                {place.notes}
-                            </div>
-                        )}
-                    </ListGroup.Item>
-                ))
+                        </ListGroup.Item>
+                    );
+                })
             )}
         </ListGroup>
 

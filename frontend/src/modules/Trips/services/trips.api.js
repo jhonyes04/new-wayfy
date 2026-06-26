@@ -28,18 +28,20 @@ export const tripsApi = {
     },
 
     async getPublicTrips(token) {
+        const headers = token ? getAuthHeader(token) : {};
         const response = await fetch(`${API_BASE_URL}/api/trips/public`, {
             method: 'GET',
-            headers: getAuthHeader(token),
+            headers: headers,
         });
 
         return handleResponse(response);
     },
 
     async getTrip(tripId, token) {
+        const headers = token ? getAuthHeader(token) : {};
         const response = await fetch(`${API_BASE_URL}/api/trips/${tripId}`, {
             method: 'GET',
-            headers: getAuthHeader(token),
+            headers: headers,
         });
 
         return handleResponse(response);

@@ -1,5 +1,6 @@
 import os
 import time
+import shutil
 from flask import jsonify
 from flask_jwt_extended import get_jwt_identity
 from sqlalchemy import select
@@ -68,7 +69,8 @@ class TripController:
         
     @staticmethod
     def get_trip(trip_id: int):
-        current_user_id = int(get_jwt_identity())
+        raw_identity = get_jwt_identity()
+        current_user_id = int(raw_identity) if raw_identity else None
         trip = db.session.execute(select(Trip).filter_by(id=trip_id)).scalar_one_or_none()
         
         if not trip:
@@ -203,7 +205,7 @@ class TripController:
         try:
             new_trip = Trip(
                 user_id=current_user_id,
-                title=f'Copia de {original.title}',
+                title=original.title,
                 description=original.description,
                 is_public=False,
                 original_trip_id=original.id,
@@ -235,6 +237,16 @@ class TripController:
                         notes=place.notes,
                     )
                     db.session.add(new_place)
+
+            if original.cover_image:
+                base_dir = os.path.abspath(os.path.dirname(__file__))
+                cover_dir = os.path.abspath(os.path.join(base_dir, '../../..', 'public', 'trip_covers'))
+                ext = original.cover_image.rsplit('.', 1)[-1]
+                new_filename = f'trip_{new_trip.id}_{int(time.time())}.{ext}'
+                src = os.path.join(cover_dir, original.cover_image)
+                if os.path.exists(src):
+                    shutil.copy2(src, os.path.join(cover_dir, new_filename))
+                    new_trip.cover_image = new_filename
 
             db.session.commit()
             return jsonify({'msg': 'Viaje copiado correctamente', 'trip': new_trip.serialize(include_days=True)}), 201
