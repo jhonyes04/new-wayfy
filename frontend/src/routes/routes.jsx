@@ -37,13 +37,13 @@ export const router = createBrowserRouter(
             <Route path="/restaurants" element={<PageRestaurants />} />
             <Route path="/transports" element={<PageTransports />} />
             <Route path="/entertainment" element={<PageEntertainment />} />
+            <Route path="/trips/public" element={<PagePublicTrips />} />
 
             <Route element={<ProtectedRoute />}>
                 <Route path="/user-dashboard" element={<PageUserDashboard />} />
                 <Route path="/user-profile" element={<PageUserProfile />} />
                 <Route path="/user-favorites" element={<PageUserFavorites />} />
                 <Route path="/trips" element={<PageUserTrips />} />
-                <Route path="/trips/public" element={<PagePublicTrips />} />
                 <Route path="/trips/:tripId" element={<PageUserTripDetail />} />
             </Route>
         </Route>,
