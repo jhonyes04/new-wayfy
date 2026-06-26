@@ -10,6 +10,7 @@ import useTooltip from '../hooks/useTooltip';
 const menuElements = [
     { link: '/', label: 'Home', icon: 'fa-home' },
     { link: '/map', label: 'Mapa', icon: 'fa-location-dot' },
+    { link: '/trips/public', label: 'Viajes de la comunidad', icon: 'fa-map' },
     { link: '/hotels', label: 'Hoteles', icon: 'fa-hotel' },
     { link: '/restaurants', label: 'Restaurantes', icon: 'fa-utensils' },
     { link: '/transports', label: 'Transportes', icon: 'fa-bus' },

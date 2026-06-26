@@ -18,6 +18,7 @@ import { PageUserProfile } from './PageUserProfile';
 import { PageUserFavorites } from './PageUserFavorites';
 import { PageUserTrips } from './PageUserTrips';
 import { TripDetail } from '../../modules/Trips/components/TripDetail';
+import { PageUserHome } from './PageUserHome';
 
 export const PageUserDashboard = () => {
     const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -101,80 +102,7 @@ export const PageUserDashboard = () => {
 
                 <main className="flex-grow-1 overflow-auto p-4">
                     <Container fluid="xl" className="mx-auto p-0">
-                        {activeTab === 'dashboard' && (
-                            <Row className="g-4">
-                                <Col xs={12} sm={6} lg={4}>
-                                    <Card
-                                        className="border-light h-100 shadow-sm rounded-4"
-                                        // style={{ borderRadius: '16px' }}
-                                    >
-                                        <Card.Body className="p-4">
-                                            <span
-                                                className="text-uppercase text-muted fw-bold"
-                                                style={{ fontSize: '0.7rem' }}
-                                            >
-                                                Consumo de API
-                                            </span>
-                                            <h3 className="h2 fw-bold text-dark mt-1 mb-3">
-                                                74.2%
-                                            </h3>
-                                            <ProgressBar
-                                                now={74.2}
-                                                variant="primary"
-                                                style={{
-                                                    height: '8px',
-                                                    borderRadius: '4px',
-                                                }}
-                                            />
-                                        </Card.Body>
-                                    </Card>
-                                </Col>
-
-                                <Col xs={12} sm={6} lg={4}>
-                                    <Card
-                                        className="border-light h-100 shadow-sm"
-                                        style={{ borderRadius: '16px' }}
-                                    >
-                                        <Card.Body className="p-4">
-                                            <span
-                                                className="text-uppercase text-muted fw-bold"
-                                                style={{ fontSize: '0.7rem' }}
-                                            >
-                                                Días restantes
-                                            </span>
-                                            <h3 className="h2 fw-bold text-dark mt-1 mb-1">
-                                                24 Días
-                                            </h3>
-                                            <span className="text-success small fw-medium">
-                                                Siguiente renovación: 28 Jun
-                                            </span>
-                                        </Card.Body>
-                                    </Card>
-                                </Col>
-
-                                <Col xs={12} lg={4}>
-                                    <Card
-                                        className="border-light h-100 shadow-sm"
-                                        style={{ borderRadius: '16px' }}
-                                    >
-                                        <Card.Body className="p-4">
-                                            <span
-                                                className="text-uppercase text-muted fw-bold"
-                                                style={{ fontSize: '0.7rem' }}
-                                            >
-                                                Soporte Activo
-                                            </span>
-                                            <h3 className="h2 fw-bold text-dark mt-1 mb-1">
-                                                0 Tickets
-                                            </h3>
-                                            <span className="text-muted small">
-                                                No requieres atención inmediata.
-                                            </span>
-                                        </Card.Body>
-                                    </Card>
-                                </Col>
-                            </Row>
-                        )}
+                        {activeTab === 'dashboard' && <PageUserHome />}
 
                         {activeTab === 'profile' && <PageUserProfile />}
 
