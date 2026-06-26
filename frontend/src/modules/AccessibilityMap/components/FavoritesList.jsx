@@ -13,6 +13,7 @@ import {
 import { useAuth } from '../../../context/auth/AuthContext';
 import { useFavorites } from '../hooks/useFavorites';
 import useGlobalReducer from '../../../hooks/useGlobalReducer';
+import { TooltipButton } from '../../../components/TooltipButton';
 import { favoritesApi } from '../services/favorites.api';
 import { FavoriteCard } from './FavoriteCard';
 import {
@@ -210,9 +211,10 @@ export const FavoritesList = () => {
 
                                     <Col xs="auto">
                                         <Stack direction="horizontal" gap={1}>
-                                            <Button
+                                            <TooltipButton
                                                 variant="outline-primary"
                                                 size="sm"
+                                                tooltip="Ver información"
                                                 onClick={() =>
                                                     setSelectedFavorite(
                                                         favorite,
@@ -220,19 +222,21 @@ export const FavoritesList = () => {
                                                 }
                                             >
                                                 <i className="fa-solid fa-circle-info"></i>
-                                            </Button>
-                                            <Button
+                                            </TooltipButton>
+                                            <TooltipButton
                                                 variant="outline-success"
                                                 size="sm"
+                                                tooltip="Ver en el mapa"
                                                 onClick={() =>
                                                     handleGoToMap(favorite)
                                                 }
                                             >
                                                 <i className="fa-solid fa-map-location-dot"></i>
-                                            </Button>
-                                            <Button
+                                            </TooltipButton>
+                                            <TooltipButton
                                                 variant="outline-danger"
                                                 size="sm"
+                                                tooltip="Eliminar"
                                                 onClick={() =>
                                                     handleRemove(
                                                         favorite.osm_id,
@@ -240,7 +244,7 @@ export const FavoritesList = () => {
                                                 }
                                             >
                                                 <i className="fa-solid fa-trash"></i>
-                                            </Button>
+                                            </TooltipButton>
                                         </Stack>
                                     </Col>
                                 </Row>
