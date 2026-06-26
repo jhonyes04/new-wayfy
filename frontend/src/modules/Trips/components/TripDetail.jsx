@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
     Row,
     Col,
@@ -30,6 +32,7 @@ export const TripDetail = ({ tripId }) => {
         handleAddPlace,
         handleUpdatePlace,
         handleDeletePlace,
+        handleReorderPlaces,
         loadFavorites,
     } = useTripDetail(tripId);
 
@@ -156,7 +159,7 @@ export const TripDetail = ({ tripId }) => {
             )}
 
             {viewMode === 'board' && days.length > 0 && (
-                <>
+                <DndProvider backend={HTML5Backend}>
                     <Row className="g-3">
                         {days.map((day) => (
                             <Col key={day.id} xs={12} md={6} xl={4}>
@@ -170,11 +173,12 @@ export const TripDetail = ({ tripId }) => {
                                         setShowAddPlace(true);
                                     }}
                                     onDeletePlace={handleDeletePlace}
+                                    onReorderPlaces={handleReorderPlaces}
                                 />
                             </Col>
                         ))}
                     </Row>
-                </>
+                </DndProvider>
             )}
 
             {viewMode === 'calendar' && hasCalendarDates && (
