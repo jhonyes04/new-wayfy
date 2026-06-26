@@ -84,7 +84,7 @@ export const CommunityReviewSection = ({ communityReview, onPhotoClick }) => {
                         </div>
                     )}
                     <div>
-                        <i className="fa-solid fa-calendar-day me-1"></i>
+                        <i className="fa-solid fa-clock me-1"></i>
                         Última actualización:{' '}
                         {formatDate(communityReview.updated_at)}
                     </div>

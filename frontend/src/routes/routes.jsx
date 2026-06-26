@@ -19,6 +19,7 @@ import { PageUserProfile } from '../pages/User/PageUserProfile';
 import { PageUserFavorites } from '../pages/User/PageUserFavorites';
 import { PageUserTrips } from '../pages/User/PageUserTrips';
 import { PagePublicTrips } from '../pages/PagePublicTrips';
+import { PagePublicTripDetail } from '../pages/PagePublicTripDetail';
 import { PageUserTripDetail } from '../pages/User/PageUserTripDetail';
 
 export const router = createBrowserRouter(
@@ -38,6 +39,10 @@ export const router = createBrowserRouter(
             <Route path="/transports" element={<PageTransports />} />
             <Route path="/entertainment" element={<PageEntertainment />} />
             <Route path="/trips/public" element={<PagePublicTrips />} />
+            <Route
+                path="/trips/public/:tripId"
+                element={<PagePublicTripDetail />}
+            />
 
             <Route element={<ProtectedRoute />}>
                 <Route path="/user-dashboard" element={<PageUserDashboard />} />

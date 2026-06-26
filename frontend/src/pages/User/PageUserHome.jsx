@@ -1,51 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Col, Container, Row, Table, Badge, Spinner } from 'react-bootstrap';
-import { useAuth } from '../../context/auth/AuthContext';
 import useGlobalReducer from '../../hooks/useGlobalReducer';
-import { tripsApi } from '../../modules/Trips/services/trips.api';
 import { useTrips } from '../../modules/Trips/hooks/useTrips';
 import { StatCard } from '../../modules/UserDashboard/components/StatCard';
 
 export const PageUserHome = () => {
     const { state } = useGlobalReducer();
-    const { token } = useAuth();
     const { trips, loading: loadingTrips } = useTrips();
-    const [forkMap, setForkMap] = useState({});
-    const [loadingForks, setLoadingForks] = useState(false);
 
-    useEffect(() => {
-        if (!trips.length || !token) return;
-
-        const myTripIds = new Set(trips.map((t) => t.id));
-
-        setLoadingForks(true);
-        tripsApi
-            .getPublicTrips(token)
-            .then((data) => {
-                const map = {};
-                (data.trips || []).forEach((t) => {
-                    if (
-                        t.original_trip_id &&
-                        myTripIds.has(t.original_trip_id)
-                    ) {
-                        map[t.original_trip_id] =
-                            (map[t.original_trip_id] ?? 0) + 1;
-                    }
-                });
-                setForkMap(map);
-            })
-            .catch(() => setForkMap({}))
-            .finally(() => setLoadingForks(false));
-    }, [trips, token]);
-
-    const totalForks = Object.values(forkMap).reduce((s, n) => s + n, 0);
+    const totalForks = trips.reduce((sum, t) => sum + (t.fork_count ?? 0), 0);
 
     return (
-        <Container>
-            <div className="d-flex align-items-center text-primary mb-4">
-                <i className="fa-solid fa-chart-pie fa-2x me-1"></i>
-                <h3 className="m-0">Resumen</h3>
-            </div>
+        <Container className="py-4">
+            <h4 className="mb-4">Resumen</h4>
             <Row className="g-4 mb-4">
                 <Col xs={12} sm={6} lg={4}>
                     <StatCard
@@ -69,18 +36,18 @@ export const PageUserHome = () => {
                         icon="fa-solid fa-code-fork"
                         label="Forks totales"
                         count={totalForks}
-                        loading={loadingForks}
+                        loading={loadingTrips}
                         variant="success"
                     />
                 </Col>
             </Row>
 
-            <h5 className="text-primary mb-3">Forks por viaje</h5>
-            {loadingTrips || loadingForks ? (
+            <h5 className="mb-3">Forks por viaje</h5>
+            {loadingTrips ? (
                 <Spinner animation="border" size="sm" />
             ) : (
                 <Table hover responsive className="align-middle">
-                    <thead className="table-dark">
+                    <thead className="table-light">
                         <tr>
                             <th>Viaje</th>
                             <th className="text-center">Visibilidad</th>
@@ -109,16 +76,16 @@ export const PageUserHome = () => {
                                 <td className="text-center">
                                     <Badge
                                         bg={
-                                            forkMap[trip.id]
+                                            trip.fork_count
                                                 ? 'success'
                                                 : 'light'
                                         }
                                         text={
-                                            forkMap[trip.id] ? 'white' : 'muted'
+                                            trip.fork_count ? 'white' : 'muted'
                                         }
                                     >
                                         <i className="fa-solid fa-code-fork me-1"></i>
-                                        {forkMap[trip.id] ?? 0}
+                                        {trip.fork_count ?? 0}
                                     </Badge>
                                 </td>
                             </tr>
