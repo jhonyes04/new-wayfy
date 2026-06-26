@@ -31,7 +31,7 @@ export const TripCard = ({
             <Card.Body>
                 <Stack direction="horizontal" gap={2} className="mb-2">
                     <Card.Title className="mb-0 text-truncate flex-grow-1">
-                        {trip.title}
+                        <h4 className="text-primary">{trip.title}</h4>
                     </Card.Title>
                     <Badge bg={trip.is_public ? 'success' : 'secondary'} pill>
                         <i
@@ -42,12 +42,20 @@ export const TripCard = ({
                 </Stack>
 
                 {trip.description && (
-                    <Card.Text className="text-muted small text-truncate">
+                    <Card.Text
+                        className="text-muted small"
+                        style={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: 5,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                        }}
+                    >
                         {trip.description}
                     </Card.Text>
                 )}
 
-                <Stack direction="horizontal" gap={2} className="mb-3">
+                <Stack direction="horizontal" gap={2}>
                     <Badge bg="light" text="dark">
                         <i className="fa-solid fa-calendar-days me-1"></i>
                         {trip.total_days}{' '}
@@ -62,7 +70,7 @@ export const TripCard = ({
                 </Stack>
             </Card.Body>
 
-            <Card.Footer className="bg-transparent border-0 pb-3">
+            <Card.Footer className="bg-transparent border-top border-1">
                 <Stack direction="horizontal" gap={1}>
                     <Button
                         variant="outline-primary"

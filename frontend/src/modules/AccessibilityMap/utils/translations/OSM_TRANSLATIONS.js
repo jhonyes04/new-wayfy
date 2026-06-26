@@ -309,3 +309,94 @@ export const translateCategory = (key) => {
 
 export const getCategoryIcon = (key) =>
     OSM_TRANSLATIONS.icons[key] || 'fa-circle-question';
+
+const SUB_TYPE_TO_CATEGORY = {
+    // Gastronomía
+    restaurant: 'gastronomia',
+    cafe: 'gastronomia',
+    bar: 'gastronomia',
+    pub: 'gastronomia',
+    fast_food: 'gastronomia',
+    ice_cream: 'gastronomia',
+    food_court: 'gastronomia',
+    // Alojamiento
+    hotel: 'alojamiento',
+    hostel: 'alojamiento',
+    apartment: 'alojamiento',
+    motel: 'alojamiento',
+    guest_house: 'alojamiento',
+    camp_site: 'alojamiento',
+    // Transporte
+    bus_stop: 'transporte',
+    bus_station: 'transporte',
+    taxi: 'transporte',
+    parking: 'transporte',
+    bicycle_parking: 'transporte',
+    // Cultura y turismo
+    museum: 'cultura_turismo',
+    art_gallery: 'cultura_turismo',
+    arts_centre: 'cultura_turismo',
+    theatre: 'cultura_turismo',
+    cinema: 'cultura_turismo',
+    library: 'cultura_turismo',
+    place_of_worship: 'cultura_turismo',
+    viewpoint: 'cultura_turismo',
+    attraction: 'cultura_turismo',
+    information: 'cultura_turismo',
+    picnic_site: 'cultura_turismo',
+    // Recreación
+    park: 'recreacion',
+    playground: 'recreacion',
+    garden: 'recreacion',
+    nightclub: 'recreacion',
+    recreation_ground: 'recreacion',
+    // Gobierno
+    townhall: 'gobierno',
+    courthouse: 'gobierno',
+    embassy: 'gobierno',
+    police: 'gobierno',
+    post_office: 'gobierno',
+    fire_station: 'gobierno',
+    // Salud
+    hospital: 'salud',
+    clinic: 'salud',
+    pharmacy: 'salud',
+    dentist: 'salud',
+    doctors: 'salud',
+    social_facility: 'salud',
+    // Dinero
+    bank: 'dinero',
+    atm: 'dinero',
+    bureau_de_change: 'dinero',
+    // Deporte
+    sports_centre: 'deporte',
+    stadium: 'deporte',
+    pitch: 'deporte',
+    swimming_pool: 'deporte',
+    fitness_centre: 'deporte',
+    // Tiendas
+    supermarket: 'tiendas',
+    convenience: 'tiendas',
+    // Baños
+    toilets: 'banos',
+};
+
+const CATEGORY_STYLES = {
+    gastronomia: { color: '#e74c3c', icon: 'fa-utensils' },
+    alojamiento: { color: '#8e44ad', icon: 'fa-bed' },
+    transporte: { color: '#7f8c8d', icon: 'fa-bus' },
+    cultura_turismo: { color: '#d35400', icon: 'fa-landmark' },
+    recreacion: { color: '#27ae60', icon: 'fa-tree' },
+    gobierno: { color: '#2980b9', icon: 'fa-building-columns' },
+    salud: { color: '#c0392b', icon: 'fa-kit-medical' },
+    dinero: { color: '#f39c12', icon: 'fa-coins' },
+    deporte: { color: '#16a085', icon: 'fa-person-running' },
+    tiendas: { color: '#e67e22', icon: 'fa-bag-shopping' },
+    banos: { color: '#95a5a6', icon: 'fa-restroom' },
+    otros: { color: '#0d6efd', icon: 'fa-location-dot' },
+};
+
+export const getCategoryStyle = (subType) => {
+    const cat = SUB_TYPE_TO_CATEGORY[subType] || 'otros';
+    return CATEGORY_STYLES[cat] || CATEGORY_STYLES.otros;
+};

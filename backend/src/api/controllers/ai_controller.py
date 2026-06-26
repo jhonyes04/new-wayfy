@@ -32,7 +32,11 @@ class AIController:
                         'content': user_prompt
                     }
                 ],
-                model='llama-3.1-8b-instant',
+                # model='llama-3.1-8b-instant',
+                model="llama-3.3-70b-versatile",
+                # model="openai/gpt-oss-20b",
+                # model="qwen/qwen3-32b",
+                # model="meta-llama/llama-4-scout-17b-16e-instruct",
                 response_format={'type': 'json_object'},
                 temperature=0.2,
                 max_tokens=300

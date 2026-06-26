@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { getCategoryStyle } from '../../AccessibilityMap/utils/translations/OSM_TRANSLATIONS';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -51,10 +52,38 @@ const daysToEvents = (days) =>
         });
     });
 
+// const CalendarEvent = ({ event }) => {
+//     const { icon } = getCategoryStyle(event.resource?.place?.sub_type);
+//     const pad = (n) => String(n).padStart(2, '0');
+//     const fmt = (d) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+//     return (
+//         <div
+//             className="d-flex align-items-center gap-1 px-1 overflow-hidden h-100"
+//             style={{ fontSize: '0.5rem', lineHeight: 1.2 }}
+//         >
+//             <i className={`fa-solid ${icon} flex-shrink-0`}></i>
+//             <span
+//                 className="text-truncate flex-grow-1"
+//                 style={{ fontSize: '0.8rem' }}
+//             >
+//                 {event.title}
+//             </span>
+//             <span
+//                 className="flex-shrink-0"
+//                 style={{ opacity: 0.85, fontSize: '0.8rem' }}
+//             >
+//                 {fmt(event.start)}–{fmt(event.end)}
+//             </span>
+//         </div>
+//     );
+// };
+
 export const TripCalendar = ({
     days,
     isOwner,
     onUpdatePlace,
+    onDeletePlace,
     onSelectedSlot,
 }) => {
     const events = useMemo(() => daysToEvents(days), [days]);
@@ -86,6 +115,46 @@ export const TripCalendar = ({
         [isOwner, onUpdatePlace],
     );
 
+    const CalendarEvent = ({ event }) => {
+        const { icon } = getCategoryStyle(event.resource?.place?.sub_type);
+        const pad = (n) => String(n).padStart(2, '0');
+        const fmt = (d) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+        return (
+            <div
+                className="d-flex align-items-center gap-1 px-1 overflow-hidden h-100"
+                style={{ fontSize: '0.5rem', lineHeight: 1.2 }}
+            >
+                <i className={`fa-solid ${icon} flex-shrink-0`}></i>
+                <span
+                    className="text-truncate flex-grow-1"
+                    style={{ fontSize: '0.8rem' }}
+                >
+                    {event.title}
+                </span>
+                <span
+                    className="flex-shrink-0"
+                    style={{ opacity: 0.85, fontSize: '0.8rem' }}
+                >
+                    {fmt(event.start)}–{fmt(event.end)}
+                </span>
+                {isOwner && (
+                    <button
+                        className="btn btn-link text-light p-0 flex-shrink-0"
+                        style={{ opacity: 0.8, lineHeight: 1 }}
+                        title="Eliminar lugar"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDeletePlace(event.dayId, event.id);
+                        }}
+                    >
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
+                )}
+            </div>
+        );
+    };
+
     return (
         <Card className="shadow-sm border-0">
             <Card.Body style={{ height: 650 }}>
@@ -106,15 +175,22 @@ export const TripCalendar = ({
                     onSelectSlot={onSelectedSlot}
                     step={15}
                     timeslots={4}
-                    eventPropGetter={() => ({
-                        style: {
-                            backgroundColor: '#0d6efd',
-                            borderRadius: '6px',
-                            border: 'none',
-                            color: '#fff',
-                            fontSize: '0.82rem',
-                        },
-                    })}
+                    eventPropGetter={(event) => {
+                        const { color } = getCategoryStyle(
+                            event.resource?.place?.sub_type,
+                        );
+                        return {
+                            style: {
+                                backgroundColor: color,
+                                borderRadius: '6px',
+                                border: 'none',
+                                color: '#fff',
+                                fontSize: '0.82rem',
+                            },
+                        };
+                    }}
+                    formats={{ eventTimeRangeFormat: () => '' }}
+                    components={{ event: CalendarEvent }}
                     tooltipAccessor={(e) =>
                         `${e.title}\n${format(e.start, 'HH:mm')} - ${format(e.end, 'HH:mm')}`
                     }
