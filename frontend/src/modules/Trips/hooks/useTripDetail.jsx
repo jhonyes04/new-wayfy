@@ -32,10 +32,49 @@ export const useTripDetail = (tripId) => {
     const handleDeleteDay = async (dayId) => {
         try {
             await tripsApi.deleteDay(tripId, dayId, token);
-            setTrip((prev) => ({
-                ...prev,
-                days: prev.days.filter((d) => d.id !== dayId),
-            }));
+
+            const remaining = (trip.days || [])
+                .filter((d) => d.id !== dayId)
+                .sort((a, b) => a.day_number - b.day_number);
+
+            const anchorDate = remaining.length > 0 ? remaining[0].date : null;
+
+            const addDays = (dateStr, n) => {
+                const [y, m, d] = dateStr.split('-').map(Number);
+                const date = new Date(y, m - 1, d);
+                date.setDate(date.getDate() + n);
+                return [
+                    date.getFullYear(),
+                    String(date.getMonth() + 1).padStart(2, '0'),
+                    String(date.getDate()).padStart(2, '0'),
+                ].join('-');
+            };
+
+            const updated = await Promise.all(
+                remaining.map(async (day, i) => {
+                    const newNumber = i + 1;
+                    const newDate = anchorDate
+                        ? addDays(anchorDate, i)
+                        : day.date;
+
+                    if (day.day_number !== newNumber || day.date !== newDate) {
+                        const data = await tripsApi.updateDay(
+                            tripId,
+                            day.id,
+                            {
+                                day_number: newNumber,
+                                date: newDate,
+                                title: `Día ${newNumber}`,
+                            },
+                            token,
+                        );
+                        return { ...data.day, places: day.places };
+                    }
+                    return day;
+                }),
+            );
+
+            setTrip((prev) => ({ ...prev, days: updated }));
         } catch (err) {
             toast.error(err.message);
         }
@@ -48,7 +87,7 @@ export const useTripDetail = (tripId) => {
 
         const newDays = [];
         for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-            const iso = d.toISOString().split('T')[0];
+            const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
             if (!existing.has(iso)) newDays.push(iso);
         }
@@ -88,12 +127,50 @@ export const useTripDetail = (tripId) => {
                 { date: date || null },
                 token,
             );
-            setTrip((prev) => ({
-                ...prev,
-                days: prev.days.map((d) =>
-                    d.id === targetDayId ? { ...d, date: data.day.date } : d,
-                ),
-            }));
+
+            if (!date) {
+                setTrip((prev) => ({
+                    ...prev,
+                    days: prev.days.map((d) =>
+                        d.id === targetDayId ? { ...d, date: null } : d,
+                    ),
+                }));
+                return;
+            }
+
+            const addDays = (dateStr, n) => {
+                const [y, m, d] = dateStr.split('-').map(Number);
+                const dt = new Date(y, m - 1, d);
+                dt.setDate(dt.getDate() + n);
+                return [
+                    dt.getFullYear(),
+                    String(dt.getMonth() + 1).padStart(2, '0'),
+                    String(dt.getDate()).padStart(2, '0'),
+                ].join('-');
+            };
+
+            const sorted = [...(trip.days || [])].sort(
+                (a, b) => a.day_number - b.day_number,
+            );
+            const anchorIndex = sorted.findIndex((d) => d.id === targetDayId);
+
+            const updated = await Promise.all(
+                sorted.map(async (day, i) => {
+                    const newDate = addDays(date, i - anchorIndex);
+                    if (day.date !== newDate) {
+                        const res = await tripsApi.updateDay(
+                            tripId,
+                            day.id,
+                            { date: newDate },
+                            token,
+                        );
+                        return { ...res.day, places: day.places };
+                    }
+                    return day;
+                }),
+            );
+
+            setTrip((prev) => ({ ...prev, days: updated }));
         } catch (err) {
             toast.error(err.message);
             throw err;

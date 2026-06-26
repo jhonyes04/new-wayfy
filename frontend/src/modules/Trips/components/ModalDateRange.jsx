@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Modal, Form, Button, Alert, Row, Col } from 'react-bootstrap';
 
 export const ModalDateRange = ({ show, onHide, onSubmit }) => {
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+    const today = new Date().toISOString().split('T')[0];
+    const [startDate, setStartDate] = useState(today);
+    const [endDate, setEndDate] = useState(today);
     const [loading, setLoading] = useState(false);
 
     const totalDays = () => {
@@ -18,8 +19,8 @@ export const ModalDateRange = ({ show, onHide, onSubmit }) => {
         setLoading(true);
         try {
             await onSubmit(startDate, endDate);
-            setStartDate('');
-            setEndDate('');
+            setStartDate(today);
+            setEndDate(today);
             onHide();
         } finally {
             setLoading(false);
@@ -64,7 +65,7 @@ export const ModalDateRange = ({ show, onHide, onSubmit }) => {
                 {days > 0 && (
                     <Alert variant="info" className="mt-3 mb-0">
                         <i className="fa-solid fa-circle-info me-2"></i>
-                        Se crearán{' '}
+                        Se creará{days > 1 ? 'n' : ''}{' '}
                         <strong>
                             {days} día{days > 1 ? 's' : ''}
                         </strong>{' '}

@@ -1,9 +1,10 @@
+import { Container } from 'react-bootstrap';
 import { TripList } from '../../modules/Trips/components/TripList';
 
 export const PageUserTrips = () => {
     return (
-        <div className="container py-4">
+        <Container>
             <TripList />
-        </div>
+        </Container>
     );
 };

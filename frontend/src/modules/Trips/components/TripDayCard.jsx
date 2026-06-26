@@ -1,4 +1,5 @@
 import { Badge, Button, Card, ListGroup, Stack } from 'react-bootstrap';
+import { TooltipButton } from '../../../components/TooltipButton';
 
 export const TripDayCard = ({
     day,
@@ -8,50 +9,30 @@ export const TripDayCard = ({
     onAddPlace,
     onDeletePlace,
 }) => (
-    <Card className="shadow-sm border-0 h-100">
+    <Card className="shadow-sm border-1 h-100 d-flex flex-column">
         <Card.Header className="d-flex align-items-center gap-2">
             <i className="fa-solid fa-calendar-day text-primary"></i>
             <span className="fw-bold flex-grow-1">
                 {day.title || `Día ${day.day_number}`}
             </span>
-            <Button
-                variant="outline-secondary"
-                size="sm"
-                title="Asignar fecha"
-                onClick={() => onOpenDateModal(day)}
-            >
-                <i
-                    className={`fa-solid ${day.date ? 'fa-calendar-check' : 'fa-calendar-plus'}`}
-                ></i>
-            </Button>
-            {isOwner && (
-                <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() => onDeleteDay(day.id)}
-                >
-                    <i className="fa-solid fa-trash"></i>
-                </Button>
+            {day.date && (
+                <div className="ms-auto">
+                    <Badge bg="light" text="dark" className="small">
+                        <i className="fa-solid fa-calendar me-1"></i>
+                        {new Date(day.date + 'T00:00:00').toLocaleDateString(
+                            'es-ES',
+                            {
+                                weekday: 'long',
+                                day: 'numeric',
+                                month: 'long',
+                            },
+                        )}
+                    </Badge>
+                </div>
             )}
         </Card.Header>
 
-        {day.date && (
-            <div className="px-3 pt-2">
-                <Badge bg="light" text="dark" className="small">
-                    <i className="fa-solid fa-calendar me-1"></i>
-                    {new Date(day.date + 'T00:00:00').toLocaleDateString(
-                        'es-ES',
-                        {
-                            weekday: 'long',
-                            day: 'numeric',
-                            month: 'long',
-                        },
-                    )}
-                </Badge>
-            </div>
-        )}
-
-        <ListGroup variant="flush" className="mt-1">
+        <ListGroup variant="flush" className="mt-1 flex-grow-1">
             {!day.places || day.places.length === 0 ? (
                 <ListGroup.Item className="text-muted small text-center py-3">
                     Sin lugares asignados
@@ -73,15 +54,16 @@ export const TripDayCard = ({
                                 </Badge>
                             )}
                             {isOwner && (
-                                <Button
+                                <TooltipButton
                                     variant="outline-danger"
                                     size="sm"
+                                    tooltip="Eliminar lugar"
                                     onClick={() =>
                                         onDeletePlace(day.id, place.id)
                                     }
                                 >
                                     <i className="fa-solid fa-xmark"></i>
-                                </Button>
+                                </TooltipButton>
                             )}
                         </Stack>
                         {place.notes && (
@@ -95,7 +77,7 @@ export const TripDayCard = ({
         </ListGroup>
 
         {isOwner && (
-            <Card.Footer className="bg-transparent border-0 pt-0 pb-2">
+            <Card.Footer className="d-flex justify-content-end gap-1 bg-transparent border-top border-1 py-2">
                 <Button
                     variant="outline-primary"
                     size="sm"
@@ -105,6 +87,26 @@ export const TripDayCard = ({
                     <i className="fa-solid fa-heart me-1"></i> Añadir desde
                     favoritos
                 </Button>
+                <TooltipButton
+                    variant="outline-secondary"
+                    size="sm"
+                    tooltip="Asignar fecha"
+                    onClick={() => onOpenDateModal(day)}
+                >
+                    <i
+                        className={`fa-solid ${day.date ? 'fa-calendar-check' : 'fa-calendar-plus'}`}
+                    ></i>
+                </TooltipButton>
+                {isOwner && (
+                    <TooltipButton
+                        variant="outline-danger"
+                        size="sm"
+                        tooltip="Eliminar día"
+                        onClick={() => onDeleteDay(day.id)}
+                    >
+                        <i className="fa-solid fa-trash"></i>
+                    </TooltipButton>
+                )}
             </Card.Footer>
         )}
     </Card>

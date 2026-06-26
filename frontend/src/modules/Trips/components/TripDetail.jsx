@@ -55,7 +55,8 @@ export const TripDetail = ({ tripId }) => {
     return (
         <>
             <Stack direction="horizontal" gap={2} className="mb-3 flex-wrap">
-                <h4 className="text-primary m-0 flex-grow-1">{trip.title}</h4>
+                <i className="fa-solid fa-route text-primary fa-2x"></i>
+                <h3 className="text-primary m-0 flex-grow-1">{trip.title}</h3>
                 <Badge bg={trip.is_public ? 'success' : 'secondary'} pill>
                     <i
                         className={`fa-solid ${trip.is_public ? 'fa-globe' : 'fa-lock'} me-1`}
@@ -113,6 +114,19 @@ export const TripDetail = ({ tripId }) => {
                         Calendario
                     </Button>
                 </ButtonGroup>
+                {isOwner && days.length > 0 && (
+                    <div className="ms-auto">
+                        <Button
+                            variant="success"
+                            size="sm"
+                            onClick={() => setShowDateRange(true)}
+                        >
+                            <i className="fa-solid fa-wand-magic-sparkles me-1"></i>
+                            Seleccionar fechas
+                        </Button>
+                    </div>
+                )}
+
                 {!hasCalendarDates && days.length > 0 && (
                     <span className="text-muted small">
                         <i className="fa-solid fa-circle-info me-1"></i> Asigna
@@ -132,7 +146,7 @@ export const TripDetail = ({ tripId }) => {
                                 onClick={() => setShowDateRange(true)}
                             >
                                 <i className="fa-solid fa-wand-magic-sparkles me-1"></i>
-                                Generar rango de días
+                                Seleccionar fechas
                             </Button>
                         </div>
                     )}
@@ -158,17 +172,6 @@ export const TripDetail = ({ tripId }) => {
                             </Col>
                         ))}
                     </Row>
-                    {isOwner && (
-                        <div className="text-center mt-4">
-                            <Button
-                                variant="outline-success"
-                                onClick={() => setShowDateRange(true)}
-                            >
-                                <i className="fa-solid fa-wand-magic-sparkles me-1"></i>
-                                Generar rango de días
-                            </Button>
-                        </div>
-                    )}
                 </>
             )}
 
@@ -177,6 +180,7 @@ export const TripDetail = ({ tripId }) => {
                     days={days}
                     isOwner={isOwner}
                     onUpdatePlace={handleUpdatePlace}
+                    onDeletePlace={handleDeletePlace}
                     onSelectedSlot={({ start }) => {
                         const dateStr = start.toISOString().split('T')[0];
                         const day = days.find((d) => d.date === dateStr);

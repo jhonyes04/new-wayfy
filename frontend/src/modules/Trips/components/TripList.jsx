@@ -5,7 +5,15 @@ import { TripCard } from './TripCard';
 import { TripFormModal } from './TripFormModal';
 
 export const TripList = () => {
-    const { trips, loading, createTrip, updateTrip, uploadCover, removeCover, deleteTrip } = useTrips();
+    const {
+        trips,
+        loading,
+        createTrip,
+        updateTrip,
+        uploadCover,
+        removeCover,
+        deleteTrip,
+    } = useTrips();
     const [showModal, setShowModal] = useState(false);
     const [editingTrip, setEditingTrip] = useState(null);
 
@@ -46,13 +54,15 @@ export const TripList = () => {
     return (
         <>
             <Stack direction="horizontal" gap={2} className="mb-4">
-                <i className="fa-solid fa-route text-primary"></i>
-                <h4 className="text-primary m-0">Mis Viajes</h4>
-                <Badge bg="secondary" pill>
-                    {trips.length}
-                </Badge>
+                <div className="d-flex align-items-center gap-2">
+                    <i className="fa-solid fa-route text-primary fa-2x"></i>
+                    <h3 className="text-primary m-0">Mis Viajes</h3>
+                    <Badge bg="secondary" pill>
+                        {trips.length}
+                    </Badge>
+                </div>
                 <Button
-                    variant="primary"
+                    variant="success"
                     size="sm"
                     className="ms-auto"
                     onClick={() => setShowModal(true)}
