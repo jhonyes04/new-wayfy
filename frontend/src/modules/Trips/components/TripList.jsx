@@ -56,7 +56,7 @@ export const TripList = () => {
             <Stack direction="horizontal" gap={2} className="text-primary mb-4">
                 <i className="fa-solid fa-map fa-2x"></i>
                 <h3 className="m-0">Mis Viajes</h3>
-                <Badge bg="secondary" pill>
+                <Badge bg="secondary" pill className="btn-circle">
                     {trips.length}
                 </Badge>
                 <Button

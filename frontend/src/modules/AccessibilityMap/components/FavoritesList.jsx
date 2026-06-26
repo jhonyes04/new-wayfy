@@ -154,7 +154,7 @@ export const FavoritesList = () => {
             <Stack direction="horizontal" gap={2} className="text-primary mb-3">
                 <i className="fa-solid fa-heart fa-2x"></i>
                 <h3 className="text-primary m-0">Mis Favoritos</h3>
-                <Badge bg="secondary" pill>
+                <Badge bg="secondary" className="btn-circle">
                     {favorites.length}
                 </Badge>
             </Stack>
