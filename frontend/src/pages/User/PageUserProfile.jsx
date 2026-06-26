@@ -331,7 +331,7 @@ export const PageUserProfile = () => {
 
                                 <Button
                                     type="submit"
-                                    variant={`${hasChanges ? 'success' : 'outline-secondary'}`}
+                                    variant={`${hasChanges ? 'primary' : 'outline-secondary'}`}
                                     disabled={!hasChanges || actionLoading}
                                     className="w-100 py-2.5 fw-bold rounded-3 shadow-sm mt-2"
                                 >

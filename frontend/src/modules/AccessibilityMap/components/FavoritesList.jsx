@@ -19,6 +19,7 @@ import { FavoriteCard } from './FavoriteCard';
 import {
     translateCategory,
     getCategoryIcon,
+    getCategoryStyle,
 } from '../utils/translations/OSM_TRANSLATIONS';
 import { toast } from 'react-toastify';
 
@@ -150,9 +151,9 @@ export const FavoritesList = () => {
 
     return (
         <>
-            <Stack direction="horizontal" gap={2} className="mb-3">
-                <i className="fa-solid fa-heart text-danger"></i>
-                <h4 className="text-primary m-0">Mis Favoritos</h4>
+            <Stack direction="horizontal" gap={2} className="text-primary mb-3">
+                <i className="fa-solid fa-heart fa-2x"></i>
+                <h3 className="text-primary m-0">Mis Favoritos</h3>
                 <Badge bg="secondary" pill>
                     {favorites.length}
                 </Badge>
@@ -164,6 +165,10 @@ export const FavoritesList = () => {
                         const wc =
                             WHEELCHAIR_LABELS[favorite.wheelchair] ||
                             WHEELCHAIR_LABELS.unknown;
+
+                        const { icon, color } = getCategoryStyle(
+                            favorite.sub_type,
+                        );
 
                         return (
                             <ListGroup.Item
@@ -192,20 +197,21 @@ export const FavoritesList = () => {
                                         </div>
                                         <Stack
                                             direction="horizontal"
-                                            gap={2}
-                                            className="flex-wrap mt-1"
+                                            gap={1}
+                                            className="flex-wrap small mt-1"
                                         >
-                                            <Badge
-                                                bg="dark"
-                                                // className="small"
+                                            <i
+                                                className={`fa-solid ${icon} me-1`}
+                                                style={{ color }}
+                                            ></i>
+                                            <div
+                                                className="fw-bold"
+                                                style={{ color }}
                                             >
-                                                <i
-                                                    className={`fa-solid ${getCategoryIcon(favorite.sub_type)} me-2`}
-                                                ></i>
                                                 {translateCategory(
                                                     favorite.sub_type,
                                                 )}
-                                            </Badge>
+                                            </div>
                                         </Stack>
                                     </Col>
 

@@ -53,14 +53,12 @@ export const TripList = () => {
 
     return (
         <>
-            <Stack direction="horizontal" gap={2} className="mb-4">
-                <div className="d-flex align-items-center gap-2">
-                    <i className="fa-solid fa-route text-primary fa-2x"></i>
-                    <h3 className="text-primary m-0">Mis Viajes</h3>
-                    <Badge bg="secondary" pill>
-                        {trips.length}
-                    </Badge>
-                </div>
+            <Stack direction="horizontal" gap={2} className="text-primary mb-4">
+                <i className="fa-solid fa-map fa-2x"></i>
+                <h3 className="m-0">Mis Viajes</h3>
+                <Badge bg="secondary" pill>
+                    {trips.length}
+                </Badge>
                 <Button
                     variant="success"
                     size="sm"
