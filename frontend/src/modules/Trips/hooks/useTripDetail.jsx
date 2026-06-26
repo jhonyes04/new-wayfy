@@ -301,6 +301,31 @@ export const useTripDetail = (tripId) => {
         }
     };
 
+    const handleReorderPlaces = async (dayId, reorderedPlaces) => {
+        try {
+            await Promise.all(
+                reorderedPlaces.map((p) =>
+                    tripsApi.updatePlace(
+                        tripId,
+                        dayId,
+                        p.id,
+                        { order: p.order },
+                        token,
+                    ),
+                ),
+            );
+
+            setTrip((prev) => ({
+                ...prev,
+                days: prev.days.map((d) =>
+                    d.id === dayId ? { ...d, places: reorderedPlaces } : d,
+                ),
+            }));
+        } catch (err) {
+            toast.error('Error al guardar el orden de los lugares');
+        }
+    };
+
     const loadFavorites = async () => {
         if (!user) return [];
         try {
@@ -323,6 +348,7 @@ export const useTripDetail = (tripId) => {
         handleDeletePlace,
         handleUpdateCover,
         handleDeleteCover,
+        handleReorderPlaces,
         loadFavorites,
     };
 };
