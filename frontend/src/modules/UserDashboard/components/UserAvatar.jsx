@@ -16,18 +16,19 @@ const UserAvatarComponent = ({ textColor = 'light' }) => {
                 <img
                     src={blobUrl || ''}
                     alt={user?.firstname}
-                    className="rounded-circle object-fit-cover border btn-circle"
+                    className="rounded-circle object-fit-cover border border-2"
+                    width={60}
                 />
                 <div
                     className="d-none d-sm-block text-start"
                     style={{ lineHeight: '1.2' }}
                 >
-                    <p className={`small mb-0 fw-semibold text-${textColor}`}>
+                    <p className={`mb-0 fw-semibold text-${textColor}`}>
                         {user?.firstname}
                     </p>
                     <span
                         className="text-muted fw-medium"
-                        style={{ fontSize: '0.75rem' }}
+                        style={{ fontSize: '0.9rem' }}
                     >
                         {user?.lastname}
                     </span>

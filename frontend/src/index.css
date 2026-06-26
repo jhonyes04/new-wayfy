@@ -520,6 +520,7 @@ html {
 body.modal-open {
     overflow: hidden !important;
     padding-right: 0 !important;
+    background-color: var(--wayfy-dark);
 }
 
 h1,
