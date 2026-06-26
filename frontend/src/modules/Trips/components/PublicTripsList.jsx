@@ -10,6 +10,7 @@ export const PublicTripsList = () => {
     const { token, user } = useAuth();
     const [trips, setTrips] = useState([]);
     const [forkedIds, setForkedIds] = useState(new Set());
+    const [myTripIds, setMyTripIds] = useState(new Set());
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -23,12 +24,18 @@ export const PublicTripsList = () => {
                         : Promise.resolve({ trips: [] }),
                 ]);
                 setTrips(publicData.trips || []);
-                const ids = new Set(
-                    (myData.trips || [])
-                        .filter((t) => t.original_trip_id)
-                        .map((t) => t.original_trip_id),
+
+                const myTrips = myData.trips || [];
+
+                setForkedIds(
+                    new Set(
+                        myTrips
+                            .filter((t) => t.original_trip_id)
+                            .map((t) => t.original_trip_id),
+                    ),
                 );
-                setForkedIds(ids);
+
+                setMyTripIds(new Set(myTrips.map((t) => t.id)));
             } catch (err) {
                 toast.error(err.message);
             } finally {
@@ -66,10 +73,10 @@ export const PublicTripsList = () => {
 
     return (
         <>
-            <Stack direction="horizontal" gap={2} className="mb-4">
-                <i className="fa-solid fa-globe fa-2x text-primary"></i>
-                <h3 className="text-primary m-0">Viajes de la comunidad</h3>
-                <Badge bg="secondary" pill className="fs-6">
+            <Stack direction="horizontal" gap={2} className="text-primary mb-4">
+                <i className="fa-solid fa-globe fa-2x"></i>
+                <h3 className="m-0">Viajes de la comunidad</h3>
+                <Badge bg="secondary" pill className="btn-circle">
                     {trips.length}
                 </Badge>
             </Stack>
@@ -100,7 +107,17 @@ export const PublicTripsList = () => {
                                 showForkButton={trip.user_id !== user?.id}
                                 onFork={handleFork}
                                 publicView
-                                alreadyForked={forkedIds.has(trip.id)}
+                                alreadyForked={
+                                    forkedIds.has(trip.id) ||
+                                    (!!trip.original_trip_id &&
+                                        myTripIds.has(trip.original_trip_id))
+                                }
+                                forkLabel={
+                                    !!trip.original_trip_id &&
+                                    myTripIds.has(trip.original_trip_id)
+                                        ? 'Copiado de ti'
+                                        : 'Ya copiado'
+                                }
                             />
                         </Col>
                     ))}

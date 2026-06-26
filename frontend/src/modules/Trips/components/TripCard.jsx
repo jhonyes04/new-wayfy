@@ -11,6 +11,7 @@ export const TripCard = ({
     onFork,
     publicView = false,
     alreadyForked = false,
+    forkLabel = false,
 }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -162,7 +163,7 @@ export const TripCard = ({
                             onClick={() => !alreadyForked && onFork(trip.id)}
                         >
                             <i className="fa-solid fa-code-fork me-1"></i>
-                            {alreadyForked ? 'Ya copiado' : 'Copiar'}
+                            {alreadyForked ? forkLabel : 'Copiar'}
                         </Button>
                     )}
                 </Stack>

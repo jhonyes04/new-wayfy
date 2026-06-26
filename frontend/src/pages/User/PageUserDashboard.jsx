@@ -33,9 +33,9 @@ export const PageUserDashboard = () => {
 
     const menuItems = [
         { id: 'dashboard', label: 'Resumen', iconClass: 'fa-chart-pie' },
-        { id: 'profile', label: 'Mi Perfil', iconClass: 'fa-user' },
         { id: 'trips', label: 'Mis viajes', iconClass: 'fa-map' },
         { id: 'favorites', label: 'Favoritos', iconClass: 'fa-heart' },
+        { id: 'profile', label: 'Mi Perfil', iconClass: 'fa-user' },
     ];
 
     return (
@@ -87,18 +87,14 @@ export const PageUserDashboard = () => {
                 <main className="flex-grow-1 overflow-auto p-4">
                     <Container fluid="xl" className="mx-auto p-0">
                         {activeTab === 'dashboard' && <PageUserHome />}
-
-                        {activeTab === 'profile' && <PageUserProfile />}
-
                         {activeTab === 'favorites' && <PageUserFavorites />}
-
                         {activeTab === 'trips' && <PageUserTrips />}
-
                         {activeTab === 'trip-detail' && (
                             <TripDetail
                                 tripId={Number(searchParams.get('tripId'))}
                             />
                         )}
+                        {activeTab === 'profile' && <PageUserProfile />}
 
                         {![
                             'dashboard',
