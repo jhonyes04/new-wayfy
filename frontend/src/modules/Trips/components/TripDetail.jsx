@@ -54,9 +54,20 @@ export const TripDetail = ({ tripId }) => {
 
     return (
         <>
-            <Stack direction="horizontal" gap={2} className="mb-3 flex-wrap">
-                <i className="fa-solid fa-route text-primary fa-2x"></i>
-                <h3 className="text-primary m-0 flex-grow-1">{trip.title}</h3>
+            {trip.cover_image && (
+                <img
+                    src={`${import.meta.env.VITE_BACKEND_URL}${trip.cover_image}`}
+                    alt={trip.title}
+                    className="w-100 rounded-3 shadow-sm mb-3"
+                    style={{ height: '220px', objectFit: 'cover' }}
+                />
+            )}
+            <Stack
+                direction="horizontal"
+                gap={2}
+                className="mb-3 flex-wrap text-primary"
+            >
+                <h3 className="m-0 flex-grow-1">{trip.title}</h3>
                 <Badge bg={trip.is_public ? 'success' : 'secondary'} pill>
                     <i
                         className={`fa-solid ${trip.is_public ? 'fa-globe' : 'fa-lock'} me-1`}
@@ -69,15 +80,6 @@ export const TripDetail = ({ tripId }) => {
                     </Badge>
                 )}
             </Stack>
-
-            {trip.cover_image && (
-                <img
-                    src={`${import.meta.env.VITE_BACKEND_URL}${trip.cover_image}`}
-                    alt={trip.title}
-                    className="w-100 rounded-3 shadow-sm mb-3"
-                    style={{ height: '220px', objectFit: 'cover' }}
-                />
-            )}
 
             {trip.description && (
                 <Alert variant="light" className="border mb-3">
