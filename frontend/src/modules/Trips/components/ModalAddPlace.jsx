@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Modal, Form, Button, Alert, Row, Col } from 'react-bootstrap';
 
 export const ModalAddPlace = ({ show, onHide, onSubmit, loadFavorites }) => {
-    const [favorites, setFavorites] = useState([]);
+    const [allFavorites, setAllFavorites] = useState([]);
+    const [selectedLabel, setSelectedLabel] = useState('');
     const [selectedFav, setSelectedFav] = useState('');
     const [visitTime, setVisitTime] = useState('');
     const [visitTimeEnd, setVisitTimeEnd] = useState('');
@@ -10,16 +11,31 @@ export const ModalAddPlace = ({ show, onHide, onSubmit, loadFavorites }) => {
 
     useEffect(() => {
         if (!show) return;
+        setSelectedLabel('');
         setSelectedFav('');
         setVisitTime('');
         setVisitTimeEnd('');
         setNotes('');
-        loadFavorites().then(setFavorites);
+        loadFavorites().then(setAllFavorites);
     }, [show]);
+
+    const placeLabels = [
+        ...new Set(allFavorites.map((f) => f.place_label).filter(Boolean)),
+    ].sort();
+
+    const filteredFavorites = selectedLabel
+        ? allFavorites.filter((f) => f.place_label === selectedLabel)
+        : allFavorites;
 
     const handleSubmit = async () => {
         if (!selectedFav) return;
-        await onSubmit(selectedFav, notes, visitTime, visitTimeEnd, favorites);
+        await onSubmit(
+            selectedFav,
+            notes,
+            visitTime,
+            visitTimeEnd,
+            allFavorites,
+        );
         onHide();
     };
 
@@ -27,19 +43,46 @@ export const ModalAddPlace = ({ show, onHide, onSubmit, loadFavorites }) => {
         <Modal show={show} onHide={onHide} centered>
             <Modal.Header closeButton>
                 <Modal.Title>
-                    <div className="d-flex align-items-center text-primary">
-                        <i className="fa-solid fa-heart me-2"></i>
-                        <h3 className="m-0">Añadir lugar desde favoritos</h3>
+                    <div className="d-flex align-items-center">
+                        <i className="fa-solid fa-heart me-2 text-danger"></i>
+                        <h3 className="text-primary m-0">
+                            Añadir lugar desde favoritos
+                        </h3>
                     </div>
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {favorites.length === 0 ? (
+                {allFavorites.length === 0 ? (
                     <Alert variant="info">
                         No tienes favoritos guardados aún.
                     </Alert>
                 ) : (
                     <>
+                        {placeLabels.length > 0 && (
+                            <Form.Group className="mb-3">
+                                <Form.Label>
+                                    <i className="fa-solid fa-folder-open me-1 text-primary"></i>
+                                    Filtrar por lugar
+                                </Form.Label>
+                                <Form.Select
+                                    value={selectedLabel}
+                                    onChange={(e) => {
+                                        setSelectedLabel(e.target.value);
+                                        setSelectedFav('');
+                                    }}
+                                >
+                                    <option value="">
+                                        Todos los favoritos
+                                    </option>
+                                    {placeLabels.map((label) => (
+                                        <option key={label} value={label}>
+                                            {label}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                        )}
+
                         <Form.Group className="mb-3">
                             <Form.Label>Selecciona un favorito</Form.Label>
                             <Form.Select
@@ -47,13 +90,14 @@ export const ModalAddPlace = ({ show, onHide, onSubmit, loadFavorites }) => {
                                 onChange={(e) => setSelectedFav(e.target.value)}
                             >
                                 <option value="">-- Elige un lugar --</option>
-                                {favorites.map((fav) => (
+                                {filteredFavorites.map((fav) => (
                                     <option key={fav.id} value={fav.id}>
                                         {fav.place_name}
                                     </option>
                                 ))}
                             </Form.Select>
                         </Form.Group>
+
                         <Row className="mb-3">
                             <Col>
                                 <Form.Group>
@@ -87,6 +131,7 @@ export const ModalAddPlace = ({ show, onHide, onSubmit, loadFavorites }) => {
                                 </Form.Group>
                             </Col>
                         </Row>
+
                         <Form.Group>
                             <Form.Label>Notas (opcional)</Form.Label>
                             <Form.Control

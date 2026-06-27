@@ -32,7 +32,7 @@ export const useFavorites = () => {
     }, [user, token, dispatch]);
 
     const addFavorite = useCallback(
-        async (osm_id, place_name, osmData, trip_id = null) => {
+        async (osm_id, place_name, osmData, place_label = null) => {
             if (!user || !token) {
                 setError('Debes estar autenticado para agregar favoritos');
                 return false;
@@ -52,7 +52,7 @@ export const useFavorites = () => {
                     osmData?.osm_type,
                     osmData?.sub_type,
                     osmData?.all_tags,
-                    trip_id,
+                    place_label,
                     token,
                 );
 
@@ -115,11 +115,18 @@ export const useFavorites = () => {
         [favorites],
     );
 
+    const getPlaceLabels = useCallback(() => {
+        return [
+            ...new Set(favorites?.map((f) => f.place_label).filter(Boolean)),
+        ].sort();
+    }, [favorites]);
+
     return {
         favorites,
         addFavorite,
         removeFavorite,
         isFavorite,
+        getPlaceLabels,
         loading,
         error,
     };

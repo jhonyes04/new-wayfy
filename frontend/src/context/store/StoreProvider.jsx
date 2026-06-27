@@ -27,6 +27,7 @@ export const StoreProvider = ({ children }) => {
                     payload: data.favorites.map((favorite) => ({
                         id: favorite.osm_id,
                         name: favorite.place_name,
+                        place_label: favorite.place_label,
                         longitude: favorite.longitude,
                         latitude: favorite.latitude,
                         created_at: favorite.created_at,
