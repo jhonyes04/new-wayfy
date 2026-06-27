@@ -16,9 +16,9 @@ export const ModalAssignDate = ({ show, onHide, day, onSubmit }) => {
     return (
         <Modal show={show} onHide={onHide} centered size="sm">
             <Modal.Header closeButton>
-                <Modal.Title>
+                <Modal.Title className="d-flex  align-items-center text-primary">
                     <i className="fa-solid fa-calendar me-2 text-primary"></i>
-                    Asignar fecha
+                    <h3 className="m-0">Asignar fecha</h3>
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -37,8 +37,12 @@ export const ModalAssignDate = ({ show, onHide, day, onSubmit }) => {
                 </Form.Group>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onHide}>Cancelar</Button>
-                <Button variant="primary" onClick={handleSubmit}>Guardar</Button>
+                <Button variant="outline-secondary" onClick={onHide}>
+                    Cancelar
+                </Button>
+                <Button variant="primary" onClick={handleSubmit}>
+                    Guardar
+                </Button>
             </Modal.Footer>
         </Modal>
     );

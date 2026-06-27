@@ -27,11 +27,9 @@ export const ModalAddPlace = ({ show, onHide, onSubmit, loadFavorites }) => {
         <Modal show={show} onHide={onHide} centered>
             <Modal.Header closeButton>
                 <Modal.Title>
-                    <div className="d-flex align-items-center">
-                        <i className="fa-solid fa-heart me-2 text-danger"></i>
-                        <h3 className="text-primary m-0">
-                            Añadir lugar desde favoritos
-                        </h3>
+                    <div className="d-flex align-items-center text-primary">
+                        <i className="fa-solid fa-heart me-2"></i>
+                        <h3 className="m-0">Añadir lugar desde favoritos</h3>
                     </div>
                 </Modal.Title>
             </Modal.Header>

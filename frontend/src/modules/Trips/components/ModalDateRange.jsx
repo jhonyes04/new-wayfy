@@ -32,9 +32,9 @@ export const ModalDateRange = ({ show, onHide, onSubmit }) => {
     return (
         <Modal show={show} onHide={onHide} centered>
             <Modal.Header closeButton>
-                <Modal.Title>
-                    <i className="fa-solid fa-calendar-range me-2 text-primary"></i>
-                    Generar días por rango
+                <Modal.Title className="d-flex align-items-center text-primary">
+                    <i className="fa-solid fa-calendar-days me-2"></i>
+                    <h3 className="m-0">Seleccionar fechas</h3>
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
