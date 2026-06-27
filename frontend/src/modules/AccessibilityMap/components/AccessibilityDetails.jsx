@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Button, Badge, Card, Alert } from 'react-bootstrap';
+import { Button, Badge, Card, Alert, Spinner } from 'react-bootstrap';
 import {
     translateCategory,
     getCategoryIcon,
 } from '../utils/translations/OSM_TRANSLATIONS';
-import useGlobalReducer from '../../../hooks/useGlobalReducer';
 import { useAuth } from '../../../context/auth/AuthContext';
 import { useFavorites } from '../hooks/useFavorites';
-import { useTrips } from '../../Trips/hooks/useTrips';
 import { accessibilityApi } from '../services/accessibility.api';
 import { AccessibilityEditor } from './AccessibilityEditor';
 import { PhotoLightbox } from './PhotoLightbox';
 import { CommunityReviewSection } from './sections/CommunityReviewSection';
 import { OsmAccessibilitySection } from './sections/OsmAccessibilitySection';
 import { InfoSection } from './sections/InfoSection';
-import { TripSelectModal } from './TripSelectModal';
+import { reverseGeocode } from '../utils/geocoding';
 
 const WHEELCHAIR_LABELS = {
     yes: { label: 'Accesible', color: 'success', icon: 'fa-wheelchair-move' },
@@ -35,9 +33,6 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
     const { user } = useAuth();
     const { addFavorite, removeFavorite, isFavorite, loading, error } =
         useFavorites();
-
-    const { trips, loading: tripsLoading } = useTrips();
-    const [showTripModal, setShowTripModal] = useState(false);
 
     const [showEditor, setShowEditor] = useState(false);
     const [communityReview, setCommunityReview] = useState(undefined);
@@ -71,13 +66,11 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
     const handleToggleFavorite = async () => {
         if (isFavorite(properties.id)) {
             await removeFavorite(properties.id);
-        } else {
-            setShowTripModal(true);
+            return;
         }
-    };
 
-    const handleSelectTrip = async (trip) => {
-        setShowTripModal(false);
+        const place_label = await reverseGeocode(coords?.[0], coords?.[1]);
+
         await addFavorite(
             properties.id,
             properties.name || 'Lugar sin nombre',
@@ -89,7 +82,7 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                 sub_type: properties.sub_type,
                 all_tags: tags,
             },
-            trip.id,
+            place_label,
         );
     };
 
@@ -162,7 +155,7 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                     <OsmAccessibilitySection tags={tags} />
                     <InfoSection tags={tags} />
 
-                    {user && trips.length > 0 && (
+                    {user && (
                         <div className="d-flex justify-content-between align-items-center mt-3">
                             <Button
                                 variant="success"
@@ -176,48 +169,48 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                             <button
                                 className="btn btn-link p-0 text-decoration-none"
                                 onClick={handleToggleFavorite}
-                                disabled={loading || tripsLoading}
-                                style={{
-                                    cursor:
-                                        loading || tripsLoading
-                                            ? 'not-allowed'
-                                            : 'pointer',
-                                }}
+                                disabled={loading}
                                 title={
                                     isFavorite(properties.id)
                                         ? 'Eliminar de favoritos'
                                         : 'Agregar a favoritos'
                                 }
                             >
-                                <i
-                                    className={`${isFavorite(properties.id) ? 'fa-solid' : 'fa-regular'} fa-heart fa-2x text-danger`}
-                                    style={{
-                                        opacity:
-                                            loading || tripsLoading ? 0.5 : 1,
-                                    }}
-                                ></i>
+                                {loading ? (
+                                    <Spinner
+                                        animation="border"
+                                        size="sm"
+                                        variant="danger"
+                                    />
+                                ) : (
+                                    <i
+                                        className={`${isFavorite(properties.id) ? 'fa-solid' : 'fa-regular'} fa-heart fa-2x text-danger`}
+                                    ></i>
+                                )}
                             </button>
                         </div>
                     )}
                 </Card.Body>
 
-                <Card.Footer className="border-top py-2">
-                    <div className="d-flex justify-content-between align-items-center text-white">
-                        <span style={{ fontSize: '0.7rem' }}>
-                            OSM ID: {properties.id}
-                        </span>
-                        <a
-                            href={osmUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-white text-decoration-none fw-bold"
-                            style={{ fontSize: '0.7rem' }}
-                        >
-                            OSM{' '}
-                            <i className="fa-solid fa-arrow-up-right-from-square ms-1"></i>
-                        </a>
-                    </div>
-                </Card.Footer>
+                {!String(properties.id).startsWith('custom_') && (
+                    <Card.Footer className="border-top py-2">
+                        <div className="d-flex justify-content-between align-items-center text-white">
+                            <span style={{ fontSize: '0.7rem' }}>
+                                OSM ID: {properties.id}
+                            </span>
+                            <a
+                                href={osmUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-white text-decoration-none fw-bold"
+                                style={{ fontSize: '0.7rem' }}
+                            >
+                                OSM{' '}
+                                <i className="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                            </a>
+                        </div>
+                    </Card.Footer>
+                )}
             </Card>
 
             {communityLightbox !== null &&
@@ -240,15 +233,6 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                         setShowEditor(false);
                         fetchCommunityReview();
                     }}
-                />
-            )}
-
-            {showTripModal && (
-                <TripSelectModal
-                    trips={trips}
-                    loading={tripsLoading}
-                    onSelect={handleSelectTrip}
-                    onClose={() => setShowTripModal(false)}
                 />
             )}
         </>

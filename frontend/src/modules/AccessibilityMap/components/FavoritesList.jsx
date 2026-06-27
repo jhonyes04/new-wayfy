@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Spinner,
     Card,
     Badge,
-    Button,
-    ListGroup,
+    Table,
     Stack,
     Row,
     Col,
+    Form,
 } from 'react-bootstrap';
 import { useAuth } from '../../../context/auth/AuthContext';
 import { useFavorites } from '../hooks/useFavorites';
@@ -47,6 +47,7 @@ export const FavoritesList = () => {
     const [loadingFavorites, setLoadingFavorites] = useState(true);
     const [error, setError] = useState(null);
     const [selectedFavorite, setSelectedFavorite] = useState(null);
+    const [activeLabel, setActiveLabel] = useState('__all__');
 
     useEffect(() => {
         if (!user || !token) return;
@@ -69,6 +70,19 @@ export const FavoritesList = () => {
 
         fetchFavorites();
     }, [user, token]);
+
+    const placeLabels = useMemo(() => {
+        return [
+            ...new Set(favorites.map((f) => f.place_label).filter(Boolean)),
+        ].sort();
+    }, [favorites]);
+
+    const filtered = useMemo(() => {
+        if (activeLabel === '__all__') return favorites;
+        if (activeLabel === '__none__')
+            return favorites.filter((f) => !f.place_label);
+        return favorites.filter((f) => f.place_label === activeLabel);
+    }, [favorites, activeLabel]);
 
     const handleRemove = async (osm_id) => {
         await removeFavorite(osm_id);
@@ -151,72 +165,150 @@ export const FavoritesList = () => {
 
     return (
         <>
-            <Stack direction="horizontal" gap={2} className="text-primary mb-3">
+            <Stack direction="horizontal" gap={2} className="text-primary mb-4">
                 <i className="fa-solid fa-heart fa-2x"></i>
                 <h3 className="text-primary m-0">Mis Favoritos</h3>
-                <Badge bg="secondary" className="btn-circle">
+                <Badge bg="secondary" pill className="btn-circle">
                     {favorites.length}
                 </Badge>
             </Stack>
 
+            <div className="d-flex flex-wrap gap-2 mb-3">
+                <Badge
+                    pill
+                    bg={activeLabel === '__all__' ? 'primary' : 'light'}
+                    text={activeLabel === '__all__' ? 'white' : 'dark'}
+                    className="px-3 py-2 fw-semibold"
+                    style={{ cursor: 'pointer', fontSize: '0.85rem' }}
+                    onClick={() => setActiveLabel('__all__')}
+                >
+                    Todos ({favorites.length})
+                </Badge>
+
+                {placeLabels.map((label) => (
+                    <Badge
+                        key={label}
+                        pill
+                        bg={activeLabel === label ? 'primary' : 'light'}
+                        text={activeLabel === label ? 'white' : 'dark'}
+                        className="px-3 py-2 fw-semibold"
+                        style={{ cursor: 'pointer', fontSize: '0.85rem' }}
+                        onClick={() => setActiveLabel(label)}
+                    >
+                        <i className="fa-solid fa-folder me-1"></i>
+                        {label} (
+                        {
+                            favorites.filter((f) => f.place_label === label)
+                                .length
+                        }
+                        )
+                    </Badge>
+                ))}
+
+                {favorites.some((f) => !f.place_label) && (
+                    <Badge
+                        pill
+                        bg={activeLabel === '__none__' ? 'secondary' : 'light'}
+                        text={activeLabel === '__none__' ? 'white' : 'dark'}
+                        className="px-3 py-2 fw-semibold"
+                        style={{ cursor: 'pointer', fontSize: '0.85rem' }}
+                        onClick={() => setActiveLabel('__none__')}
+                    >
+                        Sin categoría (
+                        {favorites.filter((f) => !f.place_label).length})
+                    </Badge>
+                )}
+            </div>
+
             <Card className="shadow-sm border-0">
-                <ListGroup variant="flush">
-                    {favorites.map((favorite) => {
-                        const wc =
-                            WHEELCHAIR_LABELS[favorite.wheelchair] ||
-                            WHEELCHAIR_LABELS.unknown;
+                <Table responsive hover className="mb-0 align-middle">
+                    <thead className="table-light">
+                        <tr>
+                            <th style={{ width: 36 }}></th>
+                            <th>Nombre</th>
+                            <th className="d-none d-md-table-cell">
+                                Categoría
+                            </th>
+                            <th className="d-none d-sm-table-cell">Lugar</th>
+                            <th className="d-none d-md-table-cell">
+                                Accesibilidad
+                            </th>
+                            <th style={{ width: 110 }}></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filtered.map((favorite) => {
+                            const wc =
+                                WHEELCHAIR_LABELS[favorite.wheelchair] ||
+                                WHEELCHAIR_LABELS.unknown;
+                            const { icon, color } = getCategoryStyle(
+                                favorite.sub_type,
+                            );
 
-                        const { icon, color } = getCategoryStyle(
-                            favorite.sub_type,
-                        );
-
-                        return (
-                            <ListGroup.Item
-                                key={favorite.id}
-                                className="py-3 px-3"
-                            >
-                                <Row className="align-items-center g-2">
-                                    <Col xs="auto" className="d-none d-sm-flex">
+                            return (
+                                <tr key={favorite.id}>
+                                    <td>
                                         <div
-                                            className={`bg-${wc.color} rounded-circle d-flex align-items-center justify-content-center text-white`}
-                                            style={{
-                                                width: '36px',
-                                                height: '36px',
-                                            }}
+                                            className={`bg-${wc.color} rounded-circle d-flex align-items-center justify-content-center text-white mx-auto`}
+                                            style={{ width: 32, height: 32 }}
                                         >
                                             <i
                                                 className={`fa-solid ${wc.icon} small`}
                                             ></i>
                                         </div>
-                                    </Col>
-
-                                    <Col>
-                                        <div className="fw-bold text-truncate">
+                                    </td>
+                                    <td>
+                                        <div
+                                            className="fw-semibold text-truncate"
+                                            style={{ maxWidth: 180 }}
+                                        >
                                             {favorite.place_name ||
                                                 'Lugar sin nombre'}
                                         </div>
-                                        <Stack
-                                            direction="horizontal"
-                                            gap={1}
-                                            className="flex-wrap small mt-1"
+                                    </td>
+                                    <td className="d-none d-md-table-cell">
+                                        <span
+                                            className="small"
+                                            style={{ color }}
                                         >
                                             <i
                                                 className={`fa-solid ${icon} me-1`}
-                                                style={{ color }}
                                             ></i>
-                                            <div
-                                                className="fw-bold"
-                                                style={{ color }}
+                                            {translateCategory(
+                                                favorite.sub_type,
+                                            )}
+                                        </span>
+                                    </td>
+                                    <td className="d-none d-sm-table-cell">
+                                        {favorite.place_label ? (
+                                            <Badge
+                                                bg="light"
+                                                text="dark"
+                                                className="fw-normal"
                                             >
-                                                {translateCategory(
-                                                    favorite.sub_type,
-                                                )}
-                                            </div>
-                                        </Stack>
-                                    </Col>
-
-                                    <Col xs="auto">
-                                        <Stack direction="horizontal" gap={1}>
+                                                <i className="fa-solid fa-folder me-1 text-primary"></i>
+                                                {favorite.place_label}
+                                            </Badge>
+                                        ) : (
+                                            <span className="text-muted small">
+                                                —
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="d-none d-md-table-cell">
+                                        <Badge
+                                            bg={wc.color}
+                                            className="fw-normal small"
+                                        >
+                                            {wc.label}
+                                        </Badge>
+                                    </td>
+                                    <td>
+                                        <Stack
+                                            direction="horizontal"
+                                            gap={1}
+                                            className="justify-content-end"
+                                        >
                                             <TooltipButton
                                                 variant="outline-primary"
                                                 size="sm"
@@ -252,12 +344,12 @@ export const FavoritesList = () => {
                                                 <i className="fa-solid fa-trash"></i>
                                             </TooltipButton>
                                         </Stack>
-                                    </Col>
-                                </Row>
-                            </ListGroup.Item>
-                        );
-                    })}
-                </ListGroup>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </Table>
             </Card>
 
             {selectedFavorite && (

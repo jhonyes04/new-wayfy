@@ -338,9 +338,7 @@ export const useTripDetail = (tripId) => {
                     .map((p) => String(p.favorite_id)),
             );
 
-            return all
-                .filter((fav) => String(fav.trip_id) === String(tripId))
-                .filter((fav) => !usedIds.has(String(fav.id)));
+            return all.filter((fav) => !usedIds.has(String(fav.id)));
         } catch {
             return [];
         }
