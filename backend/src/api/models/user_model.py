@@ -46,6 +46,7 @@ class UserFavorite(db.Model):
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    trip_id: Mapped[int] = mapped_column(Integer, ForeignKey('trips.id'), nullable=True)
     osm_id: Mapped[str] = mapped_column(String(50), nullable=False)
     place_name: Mapped[str] = mapped_column(String(200), nullable=True)
     longitude: Mapped[float] = mapped_column(Float, nullable=True)
@@ -63,6 +64,8 @@ class UserFavorite(db.Model):
     def serialize(self) -> dict:
         return {
             'id': self.id,
+            'user_id': self.user_id,
+            'trip_id': self.trip_id,
             'osm_id': self.osm_id,
             'place_name': self.place_name,
             'longitude': self.longitude,

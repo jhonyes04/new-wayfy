@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Row, Col, Button, Stack, Badge, Spinner } from 'react-bootstrap';
 import { useTrips } from '../hooks/useTrips';
 import { TripCard } from './TripCard';
@@ -16,6 +17,7 @@ export const TripList = () => {
     } = useTrips();
     const [showModal, setShowModal] = useState(false);
     const [editingTrip, setEditingTrip] = useState(null);
+    const navigate = useNavigate();
 
     const handleEdit = (trip) => {
         setEditingTrip(trip);
@@ -31,6 +33,8 @@ export const TripList = () => {
         } else {
             trip = await createTrip(formData);
             if (trip && coverFile) await uploadCover(trip.id, coverFile);
+            if (trip)
+                navigate(`/user-dashboard?tab=trip-detail&tripId=${trip.id}`);
         }
         setEditingTrip(null);
         setShowModal(false);

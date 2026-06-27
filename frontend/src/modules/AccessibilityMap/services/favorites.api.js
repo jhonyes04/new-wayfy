@@ -16,6 +16,7 @@ export const favoritesApi = {
         osm_type,
         sub_type,
         all_tags,
+        trip_id,
         token,
     ) {
         const response = await fetch(
@@ -32,6 +33,7 @@ export const favoritesApi = {
                     osm_type,
                     sub_type,
                     all_tags,
+                    trip_id,
                 }),
             },
         );

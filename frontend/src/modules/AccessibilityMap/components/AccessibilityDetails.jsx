@@ -7,12 +7,14 @@ import {
 import useGlobalReducer from '../../../hooks/useGlobalReducer';
 import { useAuth } from '../../../context/auth/AuthContext';
 import { useFavorites } from '../hooks/useFavorites';
+import { useTrips } from '../../Trips/hooks/useTrips';
 import { accessibilityApi } from '../services/accessibility.api';
 import { AccessibilityEditor } from './AccessibilityEditor';
 import { PhotoLightbox } from './PhotoLightbox';
 import { CommunityReviewSection } from './sections/CommunityReviewSection';
 import { OsmAccessibilitySection } from './sections/OsmAccessibilitySection';
 import { InfoSection } from './sections/InfoSection';
+import { TripSelectModal } from './TripSelectModal';
 
 const WHEELCHAIR_LABELS = {
     yes: { label: 'Accesible', color: 'success', icon: 'fa-wheelchair-move' },
@@ -33,6 +35,9 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
     const { user } = useAuth();
     const { addFavorite, removeFavorite, isFavorite, loading, error } =
         useFavorites();
+
+    const { trips, loading: tripsLoading } = useTrips();
+    const [showTripModal, setShowTripModal] = useState(false);
 
     const [showEditor, setShowEditor] = useState(false);
     const [communityReview, setCommunityReview] = useState(undefined);
@@ -67,19 +72,25 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
         if (isFavorite(properties.id)) {
             await removeFavorite(properties.id);
         } else {
-            await addFavorite(
-                properties.id,
-                properties.name || 'Lugar sin nombre',
-                {
-                    longitude: coords?.[0],
-                    latitude: coords?.[1],
-                    wheelchair: properties.wheelchair,
-                    osm_type: properties.osm_type,
-                    sub_type: properties.sub_type,
-                    all_tags: tags,
-                },
-            );
+            setShowTripModal(true);
         }
+    };
+
+    const handleSelectTrip = async (trip) => {
+        setShowTripModal(false);
+        await addFavorite(
+            properties.id,
+            properties.name || 'Lugar sin nombre',
+            {
+                longitude: coords?.[0],
+                latitude: coords?.[1],
+                wheelchair: properties.wheelchair,
+                osm_type: properties.osm_type,
+                sub_type: properties.sub_type,
+                all_tags: tags,
+            },
+            trip.id,
+        );
     };
 
     return (
@@ -151,7 +162,7 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                     <OsmAccessibilitySection tags={tags} />
                     <InfoSection tags={tags} />
 
-                    {user && (
+                    {user && trips.length > 0 && (
                         <div className="d-flex justify-content-between align-items-center mt-3">
                             <Button
                                 variant="success"
@@ -165,9 +176,12 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                             <button
                                 className="btn btn-link p-0 text-decoration-none"
                                 onClick={handleToggleFavorite}
-                                disabled={loading}
+                                disabled={loading || tripsLoading}
                                 style={{
-                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                    cursor:
+                                        loading || tripsLoading
+                                            ? 'not-allowed'
+                                            : 'pointer',
                                 }}
                                 title={
                                     isFavorite(properties.id)
@@ -177,7 +191,10 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                             >
                                 <i
                                     className={`${isFavorite(properties.id) ? 'fa-solid' : 'fa-regular'} fa-heart fa-2x text-danger`}
-                                    style={{ opacity: loading ? 0.5 : 1 }}
+                                    style={{
+                                        opacity:
+                                            loading || tripsLoading ? 0.5 : 1,
+                                    }}
                                 ></i>
                             </button>
                         </div>
@@ -223,6 +240,15 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                         setShowEditor(false);
                         fetchCommunityReview();
                     }}
+                />
+            )}
+
+            {showTripModal && (
+                <TripSelectModal
+                    trips={trips}
+                    loading={tripsLoading}
+                    onSelect={handleSelectTrip}
+                    onClose={() => setShowTripModal(false)}
                 />
             )}
         </>

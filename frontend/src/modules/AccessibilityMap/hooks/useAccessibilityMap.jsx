@@ -19,6 +19,7 @@ const useAccessibilityMap = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [cursor, setCursor] = useState('grab');
+    const [customPin, setCustomPin] = useState(null);
 
     const mapRef = useRef(null);
     const debounceRef = useRef(null);
@@ -277,34 +278,46 @@ const useAccessibilityMap = () => {
             const hasClusters = map.getLayer('clusters');
             const hasUnclustered = map.getLayer('unclustered-point');
 
-            if (!hasClusters || !hasUnclustered) return;
+            if (hasClusters && hasUnclustered) {
+                const clusters = map.queryRenderedFeatures(evt.point, {
+                    layers: ['clusters'],
+                });
 
-            const clusters = map.queryRenderedFeatures(evt.point, {
-                layers: ['clusters'],
-            });
+                if (clusters.length) {
+                    setCustomPin(null);
+                    const clusterId = clusters[0].properties.cluster_id;
+                    map.getSource('wheelchair').getClusterExpansionZoom(
+                        clusterId,
+                        (err, zoom) => {
+                            if (err) return;
+                            map.easeTo({
+                                center: clusters[0].geometry.coordinates,
+                                zoom,
+                            });
+                        },
+                    );
+                    return;
+                }
 
-            if (clusters.length) {
-                const clusterId = clusters[0].properties.cluster_id;
-                map.getSource('wheelchair').getClusterExpansionZoom(
-                    clusterId,
-                    (err, zoom) => {
-                        if (err) return;
-                        map.easeTo({
-                            center: clusters[0].geometry.coordinates,
-                            zoom,
-                        });
-                    },
-                );
-                return;
+                const points = map.queryRenderedFeatures(evt.point, {
+                    layers: ['unclustered-point'],
+                });
+
+                if (points.length) {
+                    setCustomPin(null);
+                    dispatch({
+                        type: 'SET_SELECTED_FEATURE',
+                        payload: points[0],
+                    });
+                    return;
+                }
             }
 
-            const points = map.queryRenderedFeatures(evt.point, {
-                layers: ['unclustered-point'],
+            dispatch({ type: 'SET_SELECTED_FEATURE', payload: null });
+            setCustomPin({
+                longitude: evt.lngLat.lng,
+                latitude: evt.lngLat.lat,
             });
-
-            if (points.length) {
-                dispatch({ type: 'SET_SELECTED_FEATURE', payload: points[0] });
-            }
         },
         [dispatch],
     );
@@ -320,6 +333,7 @@ const useAccessibilityMap = () => {
             favorites,
             selectedLocation,
             layers,
+            customPin,
         },
         actions: {
             setCursor,
@@ -327,6 +341,7 @@ const useAccessibilityMap = () => {
             handleMoveEnd,
             handleClick,
             handleMapLoad,
+            clearCustomPin: () => setCustomPin(null),
         },
         mapRef,
     };

@@ -46,38 +46,11 @@ const daysToEvents = (days) =>
                 title: place.place_name,
                 start,
                 end,
-                allDay: false,
+                allDay: !place.visit_time,
                 resource: { day, place },
             };
         });
     });
-
-// const CalendarEvent = ({ event }) => {
-//     const { icon } = getCategoryStyle(event.resource?.place?.sub_type);
-//     const pad = (n) => String(n).padStart(2, '0');
-//     const fmt = (d) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-
-//     return (
-//         <div
-//             className="d-flex align-items-center gap-1 px-1 overflow-hidden h-100"
-//             style={{ fontSize: '0.5rem', lineHeight: 1.2 }}
-//         >
-//             <i className={`fa-solid ${icon} flex-shrink-0`}></i>
-//             <span
-//                 className="text-truncate flex-grow-1"
-//                 style={{ fontSize: '0.8rem' }}
-//             >
-//                 {event.title}
-//             </span>
-//             <span
-//                 className="flex-shrink-0"
-//                 style={{ opacity: 0.85, fontSize: '0.8rem' }}
-//             >
-//                 {fmt(event.start)}–{fmt(event.end)}
-//             </span>
-//         </div>
-//     );
-// };
 
 export const TripCalendar = ({
     days,

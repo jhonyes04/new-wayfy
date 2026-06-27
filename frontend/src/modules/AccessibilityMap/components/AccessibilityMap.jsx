@@ -13,6 +13,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import '../css/AccessibilityMap.css';
 import useAccessibilityMap from '../hooks/useAccessibilityMap';
 import { AIAssistant } from '../../AIAssistant/components/AIAssistant';
+import { CustomPinPopup } from './CustomPinPopup';
 
 export const AccessibilityMap = () => {
     const { state, actions, mapRef } = useAccessibilityMap();
@@ -25,11 +26,11 @@ export const AccessibilityMap = () => {
         cursor,
         favorites,
         selectedLocation,
+        customPin,
     } = state;
 
     return (
         <div className="w-100 h-100 position-relative overflow-hidden">
-            {/* INDICADOR DE CARGA */}
             {loading && (
                 <div
                     className="position-absolute z-1"
@@ -51,7 +52,6 @@ export const AccessibilityMap = () => {
                 </div>
             )}
 
-            {/* AVISO DE ERROR */}
             {!loading && error && (
                 <div
                     className="position-absolute z-1"
@@ -65,6 +65,14 @@ export const AccessibilityMap = () => {
                         <span className="text-small">{error}</span>
                     </Alert>
                 </div>
+            )}
+
+            {customPin && (
+                <CustomPinPopup
+                    longitude={customPin.longitude}
+                    latitude={customPin.latitude}
+                    onClose={actions.clearCustomPin}
+                />
             )}
 
             <Map
@@ -97,7 +105,6 @@ export const AccessibilityMap = () => {
                         clusterMaxZoom={14}
                         clusterRadius={50}
                     >
-                        {/* <Layer {...state.layers.clusterPulseLayer} /> */}
                         <Layer {...state.layers.clusterLayer} />
                         <Layer {...state.layers.clusterCountLayer} />
                         <Layer {...state.layers.unclusteredLayer} />
@@ -114,31 +121,39 @@ export const AccessibilityMap = () => {
                     </Marker>
                 )}
 
-                {/* MARCADOR SELECCIONADO */}
                 {selectedLocation && (
                     <Marker
                         longitude={selectedLocation.longitude}
                         latitude={selectedLocation.latitude}
                         anchor="bottom"
-                    >
-                        {/* <i className="fa-solid fa-location-dot text-danger fs-2"></i> */}
-                    </Marker>
+                    ></Marker>
                 )}
 
-                {/* MARCADORES GUARDADOS POR EL USUARIO */}
-                {favorites?.map((favorite) => (
+                {favorites
+                    ?.filter((f) => f.longitude != null && f.latitude != null)
+                    .map((favorite) => (
+                        <Marker
+                            key={favorite.id}
+                            longitude={favorite.longitude}
+                            latitude={favorite.latitude}
+                            anchor="bottom"
+                        >
+                            <i
+                                className="marker-wayfy shadow-sm"
+                                title={favorite.name}
+                            ></i>
+                        </Marker>
+                    ))}
+
+                {customPin && (
                     <Marker
-                        key={favorite.id}
-                        longitude={favorite.longitude}
-                        latitude={favorite.latitude}
+                        longitude={customPin.longitude}
+                        latitude={customPin.latitude}
                         anchor="bottom"
                     >
-                        <i
-                            className="marker-wayfy shadow-sm"
-                            title={favorite.name}
-                        ></i>
+                        <i className="fa-solid fa-location-dot text-primary fs-2"></i>
                     </Marker>
-                ))}
+                )}
             </Map>
 
             <AIAssistant />

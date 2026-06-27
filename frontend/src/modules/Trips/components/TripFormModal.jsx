@@ -54,7 +54,11 @@ export const TripFormModal = ({
         e.preventDefault();
         if (!title.trim()) return;
         onSubmit(
-            { title: title.trim(), description: description.trim(), is_public: isPublic },
+            {
+                title: title.trim(),
+                description: description.trim(),
+                is_public: isPublic,
+            },
             coverFile,
             deleteExistingCover,
         );
@@ -63,9 +67,11 @@ export const TripFormModal = ({
     return (
         <Modal show={show} onHide={onHide} centered>
             <Modal.Header closeButton>
-                <Modal.Title>
-                    <i className="fa-solid fa-route me-2 text-primary"></i>
-                    {initialData ? 'Editar viaje' : 'Nuevo viaje'}
+                <Modal.Title className="d-flex align-items-center text-primary">
+                    <i className="fa-solid fa-route me-2"></i>
+                    <h3 className="m-0">
+                        {initialData ? 'Editar viaje' : 'Nuevo viaje'}
+                    </h3>
                 </Modal.Title>
             </Modal.Header>
             <Form onSubmit={handleSubmit}>
@@ -103,7 +109,10 @@ export const TripFormModal = ({
                                     src={coverPreview}
                                     alt="Portada"
                                     className="w-100 rounded-3"
-                                    style={{ height: '160px', objectFit: 'cover' }}
+                                    style={{
+                                        height: '160px',
+                                        objectFit: 'cover',
+                                    }}
                                 />
                                 <Stack
                                     direction="horizontal"
@@ -113,7 +122,9 @@ export const TripFormModal = ({
                                     <Button
                                         size="sm"
                                         variant="light"
-                                        onClick={() => fileInputRef.current.click()}
+                                        onClick={() =>
+                                            fileInputRef.current.click()
+                                        }
                                         title="Cambiar imagen"
                                     >
                                         <i className="fa-solid fa-camera"></i>
@@ -135,7 +146,9 @@ export const TripFormModal = ({
                                 onClick={() => fileInputRef.current.click()}
                             >
                                 <i className="fa-solid fa-image fa-2x mb-2 opacity-40"></i>
-                                <span className="small">Añadir imagen de portada</span>
+                                <span className="small">
+                                    Añadir imagen de portada
+                                </span>
                             </div>
                         )}
                         <input

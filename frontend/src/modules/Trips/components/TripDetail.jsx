@@ -126,7 +126,7 @@ export const TripDetail = ({ tripId }) => {
                             size="sm"
                             onClick={() => setShowDateRange(true)}
                         >
-                            <i className="fa-solid fa-wand-magic-sparkles me-1"></i>
+                            <i className="fa-solid fa-calendar-days me-1"></i>
                             Seleccionar fechas
                         </Button>
                     </div>
@@ -150,7 +150,7 @@ export const TripDetail = ({ tripId }) => {
                                 variant="primary"
                                 onClick={() => setShowDateRange(true)}
                             >
-                                <i className="fa-solid fa-wand-magic-sparkles me-1"></i>
+                                <i className="fa-solid fa-calendar-days me-1"></i>
                                 Seleccionar fechas
                             </Button>
                         </div>

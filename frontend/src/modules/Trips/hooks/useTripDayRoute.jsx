@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
-export const useTripDayRoute = (places) => {
+export const useTripDayRoute = (places, profile = 'walking') => {
     const [routeGeoJSON, setRouteGeoJSON] = useState(null);
-    const [routeInfo, setRouteInfo] = useState(null); // { distance, duration }
+    const [routeInfo, setRouteInfo] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -28,7 +28,7 @@ export const useTripDayRoute = (places) => {
                 .join(';');
 
             const url =
-                `https://api.mapbox.com/directions/v5/mapbox/walking/${coords}` +
+                `https://api.mapbox.com/directions/v5/mapbox/${profile}/${coords}` +
                 `?geometries=geojson&overview=full&access_token=${MAPBOX_TOKEN}`;
 
             try {
@@ -59,7 +59,7 @@ export const useTripDayRoute = (places) => {
         };
 
         fetchRoute();
-    }, [places]);
+    }, [places, profile]);
 
     return { routeGeoJSON, routeInfo, loading, error };
 };

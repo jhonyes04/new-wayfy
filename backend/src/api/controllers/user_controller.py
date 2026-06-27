@@ -264,6 +264,7 @@ class UserController:
         if not user:
             return jsonify({'msg': 'Usuario no encontrado'}), 404
         
+        trip_id = data.get('trip_id', None)
         osm_id = data['osm_id']
         place_name = data.get('place_name', None)
         longitude = data.get('longitude', None)
@@ -283,6 +284,7 @@ class UserController:
         try:
             new_favorite = UserFavorite(
                 user_id=user_id,
+                trip_id=trip_id,
                 osm_id=osm_id,
                 place_name=place_name,
                 longitude=longitude,

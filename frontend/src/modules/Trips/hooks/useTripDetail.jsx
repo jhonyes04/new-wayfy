@@ -330,7 +330,17 @@ export const useTripDetail = (tripId) => {
         if (!user) return [];
         try {
             const data = await favoritesApi.getUserFavorites(user.id, token);
-            return data.favorites || [];
+            const all = data.favorites || [];
+
+            const usedIds = new Set(
+                (trip?.days || [])
+                    .flatMap((d) => d.places || [])
+                    .map((p) => String(p.favorite_id)),
+            );
+
+            return all
+                .filter((fav) => String(fav.trip_id) === String(tripId))
+                .filter((fav) => !usedIds.has(String(fav.id)));
         } catch {
             return [];
         }
