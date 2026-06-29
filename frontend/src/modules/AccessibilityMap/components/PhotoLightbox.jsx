@@ -23,8 +23,12 @@ export const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
 
     return createPortal(
         <div
-            className="position-fixed top-0 start-0 w-100 h-100"
-            style={{ background: 'rgba(0,0,0,0.92)', zIndex: 9999 }}
+            className="position-absolute top-50 start-50 translate-middle rounded-4 w-75 h-75"
+            style={{
+                background: 'rgba(0,0,0,0.75)',
+                backdropFilter: 'blur(8px)',
+                zIndex: 9999,
+            }}
             onClick={onClose}
         >
             <div
@@ -35,8 +39,8 @@ export const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
                     src={photos[current].src}
                     alt={photos[current].caption || 'foto'}
                     style={{
-                        width: '100vw',
-                        height: '100vh',
+                        width: '80%',
+                        height: '80%',
                         objectFit: 'contain',
                     }}
                 />

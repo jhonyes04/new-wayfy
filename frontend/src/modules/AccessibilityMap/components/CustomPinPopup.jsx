@@ -6,6 +6,7 @@ import { reverseGeocode } from '../utils/geocoding';
 import { OSM_TRANSLATIONS } from '../utils/translations/OSM_TRANSLATIONS';
 import { placesApi } from '../services/places.api';
 import { accessibilityApi } from '../services/accessibility.api';
+import { ModalForms } from '../../../components/ModalForms';
 
 const CATEGORY_GROUPS = [
     {
@@ -210,20 +211,12 @@ export const CustomPinPopup = ({ longitude, latitude, onClose }) => {
     const canSubmit = name.trim() && !loading && !saving;
 
     return (
-        <Card
-            className="shadow-lg position-absolute top-50 start-50 translate-middle overflow-y-auto z-2"
-            style={{
-                background: 'rgba(0, 0, 0, 0.85)',
-                minWidth: '320px',
-                maxWidth: '500px',
-                maxHeight: 'calc(100vh - 200px)',
-            }}
-        >
+        <ModalForms>
             <Card.Body className="p-3">
                 <div className="d-flex justify-content-between align-items-start mb-3">
                     <span className="d-flex align-items-center fw-bold text-light gap-2">
-                        <i className="fa-solid fa-location-dot fs-5 text-primary"></i>
-                        <h5 className="mb-0">Nuevo lugar</h5>
+                        <i className="fa-solid fa-location-dot fs-5"></i>
+                        <h3 className="mb-0">Nuevo lugar</h3>
                     </span>
                     <Button
                         variant="link"
@@ -355,6 +348,6 @@ export const CustomPinPopup = ({ longitude, latitude, onClose }) => {
                     )}
                 </Button>
             </Card.Body>
-        </Card>
+        </ModalForms>
     );
 };

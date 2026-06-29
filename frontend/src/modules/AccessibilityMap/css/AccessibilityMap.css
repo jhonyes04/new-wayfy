@@ -5,8 +5,8 @@
 
 .marker-wayfy {
     position: absolute;
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     background: url('../../../assets/img/marker-wayfy.png') no-repeat center
         center/cover;
     cursor: pointer;

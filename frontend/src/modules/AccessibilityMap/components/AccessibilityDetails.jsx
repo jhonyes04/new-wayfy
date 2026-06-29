@@ -13,6 +13,7 @@ import { CommunityReviewSection } from './sections/CommunityReviewSection';
 import { OsmAccessibilitySection } from './sections/OsmAccessibilitySection';
 import { InfoSection } from './sections/InfoSection';
 import { reverseGeocode } from '../utils/geocoding';
+import { ModalForms } from '../../../components/ModalForms';
 
 const WHEELCHAIR_LABELS = {
     yes: { label: 'Accesible', color: 'success', icon: 'fa-wheelchair-move' },
@@ -88,16 +89,7 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
 
     return (
         <>
-            <Card
-                className="shadow-lg position-absolute top-50 start-50 translate-middle z-1"
-                style={{
-                    background: 'rgba(0, 0, 0, 0.65)',
-                    minWidth: '300px',
-                    maxWidth: '600px',
-                    maxHeight: 'calc(100vh - 140px)',
-                    overflowY: 'auto',
-                }}
-            >
+            <ModalForms>
                 <Card.Body className="p-3">
                     <Button
                         variant="link"
@@ -212,7 +204,7 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                             </div>
                         </Card.Footer>
                     )}
-            </Card>
+            </ModalForms>
 
             {communityLightbox !== null &&
                 communityReview?.photos?.length > 0 && (

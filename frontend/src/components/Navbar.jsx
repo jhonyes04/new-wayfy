@@ -27,7 +27,7 @@ export const Navbar = () => {
     };
 
     return (
-        <nav className="navbar navbar-expand-lg bg-dark">
+        <nav className="navbar navbar-dark navbar-expand-lg bg-dark">
             <div className="container-fluid container-lg">
                 <Link to={'/'} className="navbar-brand me-2">
                     <img

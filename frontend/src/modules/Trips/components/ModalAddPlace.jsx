@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Modal, Form, Button, Alert, Row, Col } from 'react-bootstrap';
+import { ModalForms } from '../../../components/ModalForms';
 
 export const ModalAddPlace = ({ show, onHide, onSubmit, loadFavorites }) => {
     const [allFavorites, setAllFavorites] = useState([]);
