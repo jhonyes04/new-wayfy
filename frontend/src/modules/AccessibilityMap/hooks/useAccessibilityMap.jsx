@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import useGlobalReducer from '../../../hooks/useGlobalReducer';
 import useFilteredGeoJSON from './useFilteredGeoJSON';
+import { useCommunityPlaces } from './useCommunityPlaces';
 import { fetchWheelchairPlacesProgressive } from '../services/overpass.api';
 import { elementsToGeoJSON } from '../utils/toGeoJSON';
 
@@ -26,7 +27,6 @@ const useAccessibilityMap = () => {
     const abortControllerRef = useRef(null);
     const isLoadingRef = useRef(false);
     const reloadRequestedRef = useRef(false);
-
     const elementsRef = useRef([]);
 
     const filteredGeoJSON = useFilteredGeoJSON(
@@ -34,6 +34,11 @@ const useAccessibilityMap = () => {
         activeFilters,
         activeCategories,
     );
+    const {
+        approvedGeoJSON,
+        pendingGeoJSON,
+        load: loadCommunity,
+    } = useCommunityPlaces();
 
     const layers = useMemo(
         () => ({
@@ -72,11 +77,11 @@ const useAccessibilityMap = () => {
                     'circle-stroke-color': [
                         'step',
                         ['get', 'point_count'],
-                        'rgba(9, 116, 91, 0.5)',
+                        'rgba(9,116,91,0.5)',
                         10,
-                        'rgba(56, 189, 248, 0.5)',
+                        'rgba(56,189,248,0.5)',
                         50,
-                        'rgba(236, 142, 142, 0.5)',
+                        'rgba(236,142,142,0.5)',
                     ],
                     'circle-blur': 0.0001,
                 },
@@ -118,14 +123,37 @@ const useAccessibilityMap = () => {
                     'circle-pitch-alignment': 'map',
                 },
             },
+            communityApprovedLayer: {
+                id: 'community-approved',
+                type: 'circle',
+                paint: {
+                    'circle-radius': 9,
+                    'circle-color': '#8b5cf6',
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#ffffff',
+                    'circle-pitch-alignment': 'map',
+                },
+            },
+            communityPendingLayer: {
+                id: 'community-pending',
+                type: 'circle',
+                paint: {
+                    'circle-radius': 9,
+                    'circle-color': '#8b5cf6',
+                    'circle-opacity': 0.45,
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#ffffff',
+                    'circle-stroke-opacity': 0.6,
+                    'circle-pitch-alignment': 'map',
+                },
+            },
         }),
         [],
     );
 
     const updateLocation = useCallback(
-        (newViewState) => {
-            dispatch({ type: 'UPDATE_LOCATION', payload: newViewState });
-        },
+        (newViewState) =>
+            dispatch({ type: 'UPDATE_LOCATION', payload: newViewState }),
         [dispatch],
     );
 
@@ -176,12 +204,17 @@ const useAccessibilityMap = () => {
         } finally {
             isLoadingRef.current = false;
             setLoading(false);
-
-            if (reloadRequestedRef.current) {
-                loadData();
-            }
+            if (reloadRequestedRef.current) loadData();
         }
+
+        loadCommunity(map);
     }, [isPositionReady]);
+
+    useEffect(() => {
+        if (!isPositionReady) return;
+        const map = mapRef.current?.getMap();
+        if (map) loadCommunity(map);
+    }, [isPositionReady, loadCommunity]);
 
     useEffect(() => {
         if (selectedLocation) return;
@@ -191,13 +224,11 @@ const useAccessibilityMap = () => {
                 (position) => {
                     const { longitude, latitude } = position.coords;
                     setUserCoords({ longitude, latitude });
-
                     mapRef.current?.flyTo({
                         center: [longitude, latitude],
                         zoom: 14,
                         duration: 1500,
                     });
-
                     updateLocation({
                         ...viewState,
                         longitude,
@@ -217,9 +248,7 @@ const useAccessibilityMap = () => {
     }, []);
 
     useEffect(() => {
-        if (isPositionReady && mapRef.current) {
-            loadData();
-        }
+        if (isPositionReady && mapRef.current) loadData();
     }, [isPositionReady, loadData]);
 
     useEffect(() => {
@@ -268,7 +297,7 @@ const useAccessibilityMap = () => {
         if (!isPositionReady) return;
         clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => loadData(), 300);
-    }, [loadData, isPositionReady]);
+    }, [loadData, loadCommunity, isPositionReady]);
 
     const handleClick = useCallback(
         (evt) => {
@@ -313,6 +342,26 @@ const useAccessibilityMap = () => {
                 }
             }
 
+            const communityLayers = [
+                'community-approved',
+                'community-pending',
+            ].filter((id) => map.getLayer(id));
+
+            if (communityLayers.length) {
+                const communityPoints = map.queryRenderedFeatures(evt.point, {
+                    layers: communityLayers,
+                });
+
+                if (communityPoints.length) {
+                    setCustomPin(null);
+                    dispatch({
+                        type: 'SET_SELECTED_FEATURE',
+                        payload: communityPoints[0],
+                    });
+                    return;
+                }
+            }
+
             dispatch({ type: 'SET_SELECTED_FEATURE', payload: null });
             setCustomPin({
                 longitude: evt.lngLat.lng,
@@ -327,6 +376,8 @@ const useAccessibilityMap = () => {
             viewState,
             userCoords,
             filteredGeoJSON,
+            approvedGeoJSON,
+            pendingGeoJSON,
             loading,
             error,
             cursor,

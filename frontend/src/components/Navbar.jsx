@@ -70,6 +70,19 @@ export const Navbar = () => {
                                     <i className="fa-solid fa-gauge me-2"></i>
                                     Mi panel
                                 </Dropdown.Item>
+                                {user.is_admin && (
+                                    <>
+                                        <Dropdown.Divider />
+                                        <Dropdown.Item
+                                            as={Link}
+                                            to="/admin/places"
+                                            className="fw-bold text-warning"
+                                        >
+                                            <i className="fa-solid fa-shield-halved me-2"></i>
+                                            Moderación de lugares
+                                        </Dropdown.Item>
+                                    </>
+                                )}
                                 <Dropdown.Divider />
                                 <Dropdown.Item
                                     onClick={handleLogout}
