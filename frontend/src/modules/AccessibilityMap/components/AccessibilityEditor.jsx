@@ -3,6 +3,7 @@ import { Button, Card, Alert, Spinner, Form } from 'react-bootstrap';
 import { accessibilityApi } from '../services/accessibility.api';
 import { useAuth } from '../../../context/auth/AuthContext';
 import { PhotoLightbox } from './PhotoLightbox';
+import { ModalForms } from '../../../components/ModalForms';
 
 const WHEELCHAIR_OPTIONS = [
     {
@@ -133,21 +134,13 @@ export const AccessibilityEditor = ({ feature, onClose, onSaved }) => {
 
     return (
         <>
-            <Card
-                className="shadow-lg position-absolute top-50 start-50 translate-middle overflow-y-auto z-2"
-                style={{
-                    background: 'rgba(0, 0, 0, 0.85)',
-                    minWidth: '320px',
-                    maxWidth: '500px',
-                    maxHeight: 'calc(100vh - 200px)',
-                }}
-            >
+            <ModalForms>
                 <Card.Body className="p-3">
-                    <div className="d-flex justify-content-between align-items-center text-primary mb-3">
-                        <h4 className="m-0">
+                    <div className="d-flex justify-content-between align-items-center text-light mb-3">
+                        <h3 className="m-0">
                             <i className="fa-solid fa-pencil me-2"></i>
                             Editar accesibilidad
-                        </h4>
+                        </h3>
                         <Button
                             variant="link"
                             size="sm"
@@ -158,9 +151,9 @@ export const AccessibilityEditor = ({ feature, onClose, onSaved }) => {
                         </Button>
                     </div>
 
-                    <h5 className="text-light mb-3">
+                    <h3 className="text-light mb-3">
                         {properties.name || 'Lugar sin nombre'}
-                    </h5>
+                    </h3>
 
                     <h6 className="text-light mb-2">
                         Nivel de accesibilidad *
@@ -353,7 +346,7 @@ export const AccessibilityEditor = ({ feature, onClose, onSaved }) => {
                         )}
                     </Button>
                 </Card.Body>
-            </Card>
+            </ModalForms>
 
             {lightbox && (
                 <PhotoLightbox

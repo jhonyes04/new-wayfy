@@ -544,7 +544,7 @@ input,
 }
 
 .text-small {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
 }
 
 .btn-circle {
@@ -619,6 +619,21 @@ input,
 
 .settings-dropdown {
     background: var(--wayfy-white);
+}
+
+.modal-dark {
+    max-height: calc(100vh - 200px);
+    background: rgba(0, 0, 0, 0.75);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.scroll-dark {
+    scrollbar-color: var(--wayfy-white) transparent;
 }
 
 /* ============================================================

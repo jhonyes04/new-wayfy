@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Modal, Badge, Button, Stack } from 'react-bootstrap';
+import { Modal, Badge, Button, Stack, Card } from 'react-bootstrap';
 import { CommunityReviewSection } from './sections/CommunityReviewSection';
 import { OsmAccessibilitySection } from './sections/OsmAccessibilitySection';
 import { InfoSection } from './sections/InfoSection';
 import { PhotoLightbox } from './PhotoLightbox';
+import { TooltipButton } from '../../../components/TooltipButton';
+import { ModalForms } from '../../../components/ModalForms';
 import { accessibilityApi } from '../services/accessibility.api';
 import {
     translateCategory,
@@ -51,115 +53,105 @@ export const FavoriteCard = ({ favorite, onClose, onGoToMap, onRemoved }) => {
 
     return (
         <>
-            <Modal
-                show
-                onHide={onClose}
-                size="lg"
-                scrollable
-                centered
-                fullscreen="sm-down"
-            >
-                <Modal.Header
-                    className="border-0 p-0 flex-column align-items-stretch"
-                    style={{ background: 'rgba(0,0,0,0.85)' }}
-                >
-                    <Stack
-                        direction="horizontal"
-                        className="align-items-start p-3 gap-2"
+            <ModalForms>
+                <Card.Body className="p-3">
+                    <Button
+                        variant="link"
+                        className="d-flex ms-auto p-0 text-secondary position-absolute text-decoration-none end-0 top-0 mt-2 me-2"
+                        onClick={onClose}
+                        style={{ zIndex: 1001 }}
                     >
-                        <div className="d-flex flex-grow-1 flex-column gap-3 mt-3">
-                            <div>
-                                <h3 className="text-white m-0 lh-sm">
-                                    {favorite.place_name || 'Lugar sin nombre'}
-                                </h3>
-                                <div className="small text-white">
-                                    <i
-                                        className={`fa-solid ${getCategoryIcon(favorite.sub_type)} me-2`}
-                                    ></i>
-                                    {translateCategory(favorite.sub_type)}
-                                </div>
-                            </div>
+                        <i className="fa-solid fa-circle-xmark fs-5"></i>
+                    </Button>
 
-                            <div className="d-flex align-items-center">
-                                <div
-                                    className={`bg-${wheelchair.color} rounded-circle d-flex align-items-center justify-content-center text-light me-2`}
-                                    style={{ width: '30px', height: '30px' }}
-                                >
-                                    <i
-                                        className={`fa-solid ${wheelchair.icon}`}
-                                    ></i>
-                                </div>
-                                <Badge
-                                    bg="dark"
-                                    className="rounded-3 text-capitalize fw-bold"
-                                    style={{
-                                        color: `var(--bs-${wheelchair.color})`,
-                                    }}
-                                >
-                                    {wheelchair.label}
-                                </Badge>
+                    <div className="d-flex flex-column gap-3 mt-3">
+                        <div>
+                            <h3 className="text-white m-0 lh-sm">
+                                {favorite.place_name || 'Lugar sin nombre'}
+                            </h3>
+                            <div className="small text-white">
+                                <i
+                                    className={`fa-solid ${getCategoryIcon(favorite.sub_type)} me-2`}
+                                ></i>
+                                {translateCategory(favorite.sub_type)}
                             </div>
                         </div>
-                        <Button
-                            variant="link"
-                            className="text-secondary p-0 flex-shrink-0"
-                            onClick={onClose}
-                            aria-label="Cerrar"
-                        >
-                            <i className="fa-solid fa-circle-xmark fs-4"></i>
-                        </Button>
-                    </Stack>
-                </Modal.Header>
 
-                <Modal.Body
-                    className="p-3"
-                    style={{ background: 'rgba(0,0,0,0.80)' }}
-                >
+                        <div className="d-flex align-items-center">
+                            <div
+                                className={`bg-${wheelchair.color} rounded-circle d-flex align-items-center justify-content-center text-light me-2`}
+                                style={{ width: '30px', height: '30px' }}
+                            >
+                                <i
+                                    className={`fa-solid ${wheelchair.icon}`}
+                                ></i>
+                            </div>
+                            <Badge
+                                bg="dark"
+                                className="rounded-3 text-capitalize fw-bold"
+                                style={{
+                                    color: `var(--bs-${wheelchair.color})`,
+                                }}
+                            >
+                                {wheelchair.label}
+                            </Badge>
+                        </div>
+                    </div>
+
                     <CommunityReviewSection
                         communityReview={communityReview}
                         onPhotoClick={(idx) => setLightboxIndex(idx)}
                     />
                     <OsmAccessibilitySection tags={tags} />
                     <InfoSection tags={tags} />
-                </Modal.Body>
 
-                <Modal.Footer
-                    className="border-top border-secondary flex-wrap gap-2 justify-content-between"
-                    style={{ background: 'rgba(0,0,0,0.85)' }}
-                >
-                    <a
-                        href={osmUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-secondary text-decoration-none small"
-                    >
-                        OSM ID: {favorite.osm_id}
-                        <i className="fa-solid fa-arrow-up-right-from-square ms-1"></i>
-                    </a>
-                    <Stack direction="horizontal" gap={2}>
-                        <Button
+                    <div className="d-flex gap-2 justify-content-end mt-2">
+                        <TooltipButton
                             variant="outline-success"
                             size="sm"
+                            tooltip="Ver en el mapa"
                             onClick={() => {
                                 onGoToMap(favorite);
                                 onClose();
                             }}
                         >
                             <i className="fa-solid fa-map-location-dot d-none d-sm-inline"></i>
-                        </Button>
-                        <Button
+                        </TooltipButton>
+                        <TooltipButton
                             variant="outline-danger"
                             size="sm"
+                            tooltip="Eliminar"
                             onClick={() => {
                                 onRemoved(favorite.osm_id);
                                 onClose();
                             }}
                         >
                             <i className="fa-solid fa-trash d-none d-sm-inline"></i>
-                        </Button>
-                    </Stack>
-                </Modal.Footer>
-            </Modal>
+                        </TooltipButton>
+                    </div>
+                </Card.Body>
+
+                {!String(favorite.id).startsWith('custom_') &&
+                    !String(favorite.id).startsWith('community_') && (
+                        <Card.Footer className="border-top py-2">
+                            <div className="d-flex justify-content-between align-items-center text-white">
+                                <span style={{ fontSize: '0.7rem' }}>
+                                    OSM ID: {favorite.id}
+                                </span>
+                                <a
+                                    href={osmUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-white text-decoration-none fw-bold"
+                                    style={{ fontSize: '0.7rem' }}
+                                >
+                                    OSM{' '}
+                                    <i className="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                                </a>
+                            </div>
+                        </Card.Footer>
+                    )}
+            </ModalForms>
 
             {lightboxIndex !== null && communityReview?.photos?.length > 0 && (
                 <PhotoLightbox
