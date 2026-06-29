@@ -21,6 +21,8 @@ import { PageUserTrips } from '../pages/User/PageUserTrips';
 import { PagePublicTrips } from '../pages/PagePublicTrips';
 import { PagePublicTripDetail } from '../pages/PagePublicTripDetail';
 import { PageUserTripDetail } from '../pages/User/PageUserTripDetail';
+import { AdminRoute } from '../components/AdminRoute';
+import { PageAdminPlaces } from '../pages/Admin/PageAdminPlaces';
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -50,6 +52,10 @@ export const router = createBrowserRouter(
                 <Route path="/user-favorites" element={<PageUserFavorites />} />
                 <Route path="/trips" element={<PageUserTrips />} />
                 <Route path="/trips/:tripId" element={<PageUserTripDetail />} />
+            </Route>
+
+            <Route element={<AdminRoute />}>
+                <Route path="/admin/places" element={<PageAdminPlaces />} />
             </Route>
         </Route>,
     ),

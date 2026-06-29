@@ -6,9 +6,7 @@ import Map, {
     Source,
     Layer,
 } from 'react-map-gl';
-
 import { Alert, Spinner } from 'react-bootstrap';
-
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '../css/AccessibilityMap.css';
 import useAccessibilityMap from '../hooks/useAccessibilityMap';
@@ -21,6 +19,8 @@ export const AccessibilityMap = () => {
         viewState,
         userCoords,
         filteredGeoJSON,
+        approvedGeoJSON,
+        pendingGeoJSON,
         loading,
         error,
         cursor,
@@ -87,7 +87,12 @@ export const AccessibilityMap = () => {
                 onLoad={actions.handleMapLoad}
                 mapStyle="mapbox://styles/mapbox/streets-v12"
                 mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-                interactiveLayerIds={['clusters', 'unclustered-point']}
+                interactiveLayerIds={[
+                    'clusters',
+                    'unclustered-point',
+                    'community-approved',
+                    'community-pending',
+                ]}
             >
                 <GeolocateControl
                     position="top-left"
@@ -101,7 +106,7 @@ export const AccessibilityMap = () => {
                         id="wheelchair"
                         type="geojson"
                         data={filteredGeoJSON}
-                        cluster={true}
+                        cluster
                         clusterMaxZoom={14}
                         clusterRadius={50}
                     >
@@ -110,6 +115,22 @@ export const AccessibilityMap = () => {
                         <Layer {...state.layers.unclusteredLayer} />
                     </Source>
                 )}
+
+                <Source
+                    id="community-approved"
+                    type="geojson"
+                    data={approvedGeoJSON}
+                >
+                    <Layer {...state.layers.communityApprovedLayer} />
+                </Source>
+
+                <Source
+                    id="community-pending"
+                    type="geojson"
+                    data={pendingGeoJSON}
+                >
+                    <Layer {...state.layers.communityPendingLayer} />
+                </Source>
 
                 {userCoords && (
                     <Marker
@@ -126,7 +147,7 @@ export const AccessibilityMap = () => {
                         longitude={selectedLocation.longitude}
                         latitude={selectedLocation.latitude}
                         anchor="bottom"
-                    ></Marker>
+                    />
                 )}
 
                 {favorites

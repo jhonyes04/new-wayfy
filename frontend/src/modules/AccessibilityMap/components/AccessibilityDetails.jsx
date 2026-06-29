@@ -192,25 +192,26 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                     )}
                 </Card.Body>
 
-                {!String(properties.id).startsWith('custom_') && (
-                    <Card.Footer className="border-top py-2">
-                        <div className="d-flex justify-content-between align-items-center text-white">
-                            <span style={{ fontSize: '0.7rem' }}>
-                                OSM ID: {properties.id}
-                            </span>
-                            <a
-                                href={osmUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-white text-decoration-none fw-bold"
-                                style={{ fontSize: '0.7rem' }}
-                            >
-                                OSM{' '}
-                                <i className="fa-solid fa-arrow-up-right-from-square ms-1"></i>
-                            </a>
-                        </div>
-                    </Card.Footer>
-                )}
+                {!String(properties.id).startsWith('custom_') &&
+                    !String(properties.id).startsWith('community_') && (
+                        <Card.Footer className="border-top py-2">
+                            <div className="d-flex justify-content-between align-items-center text-white">
+                                <span style={{ fontSize: '0.7rem' }}>
+                                    OSM ID: {properties.id}
+                                </span>
+                                <a
+                                    href={osmUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-white text-decoration-none fw-bold"
+                                    style={{ fontSize: '0.7rem' }}
+                                >
+                                    OSM{' '}
+                                    <i className="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                                </a>
+                            </div>
+                        </Card.Footer>
+                    )}
             </Card>
 
             {communityLightbox !== null &&
