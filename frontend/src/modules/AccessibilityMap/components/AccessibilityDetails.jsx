@@ -48,8 +48,11 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
             : properties.all_tags || {};
 
     const coords = feature.geometry?.coordinates;
+
+    const effectiveWheelchair =
+        communityReview?.wheelchair ?? properties.wheelchair;
     const wheelchair =
-        WHEELCHAIR_LABELS[properties.wheelchair] || WHEELCHAIR_LABELS.unknown;
+        WHEELCHAIR_LABELS[effectiveWheelchair] || WHEELCHAIR_LABELS.unknown;
     const osmUrl = `https://www.openstreetmap.org/${properties.osm_type || 'node'}/${properties.id}`;
 
     const fetchCommunityReview = () => {
@@ -225,6 +228,7 @@ export const AccessibilityDetails = ({ feature, onClose }) => {
                     onSaved={() => {
                         setShowEditor(false);
                         fetchCommunityReview();
+                        window.dispatchEvent(new Event('wayfy:review-saved'));
                     }}
                 />
             )}

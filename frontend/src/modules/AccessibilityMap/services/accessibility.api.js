@@ -1,6 +1,6 @@
 const BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api/accessibility`;
 
-const getToken = () => sessionStorage.getItem('wayfy_token');
+const getToken = () => localStorage.getItem('wayfy_token');
 
 export const accessibilityApi = {
     getByOsmId: async (osmId) => {
@@ -61,6 +61,17 @@ export const accessibilityApi = {
         });
 
         if (!response.ok) throw new Error('Error al eliminar la foto');
+
+        return response.json();
+    },
+
+    getWheelchairMap: async () => {
+        const response = await fetch(`${BASE_URL}/wheelchair-map`);
+
+        if (!response.ok)
+            throw new Error(
+                'Error al obtener mapa de accesibilidad comunitaria',
+            );
 
         return response.json();
     },
