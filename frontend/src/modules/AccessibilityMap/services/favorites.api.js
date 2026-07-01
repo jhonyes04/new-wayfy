@@ -1,9 +1,8 @@
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-const getAuthHeader = (token) => ({
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-});
+import {
+    API_BASE_URL,
+    getAuthHeader,
+    handleResponse,
+} from '../../../services/apiUtils';
 
 export const favoritesApi = {
     async addFavorite(
@@ -38,12 +37,7 @@ export const favoritesApi = {
             },
         );
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.msg || 'Error al agreagar favorito');
-        }
-
-        return await response.json();
+        return await handleResponse(response, 'Error al agregar favorito');
     },
 
     async removeFavorite(userId, osm_id, token) {
@@ -55,12 +49,7 @@ export const favoritesApi = {
             },
         );
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.msg || 'Error al eliminar favorito');
-        }
-
-        return await response.json();
+        return await handleResponse(response, 'Error al eliminar favorito');
     },
 
     async getUserFavorites(userId, token) {
@@ -72,11 +61,6 @@ export const favoritesApi = {
             },
         );
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.msg || 'Error al obtener favoritos');
-        }
-
-        return await response.json();
+        return await handleResponse(response, 'Error al obtener favoritos');
     },
 };

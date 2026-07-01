@@ -36,7 +36,11 @@ bcrypt.init_app(app)
 limiter.init_app(app)
 
 # --- CONFIGURACIÓN DE SEGURIDAD PARA JWT ---
-app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", os.getenv("FLASK_APP_KEY", "fallback-secret-key"))
+# app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", os.getenv("FLASK_APP_KEY", "fallback-secret-key"))
+jwt_secret = os.getenv("JWT_SECRET_KEY")
+if not jwt_secret:
+    raise RuntimeError("JWT_SECRET_KEY no está configurado. Define esta variable de entorno")
+app.config['JWT_SECRET_KEY'] = jwt_secret
 
 expires_hours = float(os.getenv("JWT_ACCESS_TOKEN_EXPIRES_HOURS", 1))
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=expires_hours)
@@ -86,4 +90,4 @@ def serve_any_other_file(path):
 
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
-    app.run(host='0.0.0.0', port=PORT, debug=True)
+    app.run(host='0.0.0.0', port=PORT, debug=os.getenv('FLASK_DEBUG') == "1")

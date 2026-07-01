@@ -13,7 +13,7 @@ import {
 import { useAuth } from '../context/auth/AuthContext';
 import { toast } from 'react-toastify';
 
-export const PageLogin = () => {
+const PageLogin = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -154,3 +154,5 @@ export const PageLogin = () => {
         </Container>
     );
 };
+
+export default PageLogin;

@@ -1,7 +1,7 @@
 import os
 import time
 import shutil
-from flask import jsonify
+from flask import jsonify, current_app
 from flask_jwt_extended import get_jwt_identity
 from sqlalchemy import select
 from api.models import db
@@ -41,6 +41,7 @@ class TripController:
             return jsonify({'msg': 'Viaje creado', 'trip': trip.serialize()}), 201
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al crear viaje: {e}")
             return jsonify({'msg': 'Error al crear el viaje', 'error': str(e)}), 500
         
     @staticmethod
@@ -54,6 +55,7 @@ class TripController:
             
             return jsonify({'total': len(trips), 'trips': [t.serialize() for t in trips]}), 200
         except Exception as e:
+            current_app.logger.error(f"Error al obtener viajes : {e}")
             return jsonify({'msg': 'Error al obtener viajes', 'error': str(e)}), 500
         
     @staticmethod
@@ -65,6 +67,7 @@ class TripController:
             
             return jsonify({'total': len(trips), 'trips': [t.serialize() for t in trips]}), 200
         except Exception as e:
+            current_app.logger.error(f"Error al obtener viajes públicos: {e}")
             return jsonify({'msg': 'Error al obtener viajes públicos', 'error': str(e)}), 500
         
     @staticmethod
@@ -101,6 +104,7 @@ class TripController:
             return jsonify({'msg': 'Viaje actualizado', 'trip': trip.serialize()}), 200
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al actualizar el viaje: {e}")
             return jsonify({'msg': 'Error al actualizar el viaje', 'error': str(e)}), 500
         
     @staticmethod
@@ -142,6 +146,7 @@ class TripController:
             return jsonify({'msg': 'Imagen actualizada', 'trip': trip.serialize()}), 200
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al guardar la imagen: {e}")
             return jsonify({'msg': 'Error al guardar la imagen', 'error': str(e)}), 500
         
     @staticmethod
@@ -172,6 +177,7 @@ class TripController:
             return jsonify({'msg': 'Imagen eliminada', 'trip': trip.serialize()}), 200
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al eliminar la imagen: {e}")
             return jsonify({'msg': 'Error al eliminar la imagen', 'error': str(e)}), 500
         
     @staticmethod
@@ -190,6 +196,7 @@ class TripController:
             return jsonify({'msg': 'Viaje eliminado'}), 200
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al eliminar el viaje: {e}")
             return jsonify({'msg': 'Error al eliminar el viaje', 'error': str(e)}), 500
 
     @staticmethod
@@ -252,6 +259,7 @@ class TripController:
             return jsonify({'msg': 'Viaje copiado correctamente', 'trip': new_trip.serialize(include_days=True)}), 201
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al copiar el viaje: {e}")
             return jsonify({'msg': 'Error al copiar el viaje', 'error': str(e)}), 500
         
     @staticmethod
@@ -280,6 +288,7 @@ class TripController:
             return jsonify({'msg': 'Día añadido', 'day': day.serialize()}), 201
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al añadir el día: {e}")
             return jsonify({'msg': 'Error al añadir el día', 'error': str(e)}), 500
 
     @staticmethod
@@ -312,6 +321,7 @@ class TripController:
             return jsonify({'msg': 'Día actualizado', 'day': day.serialize(include_places=True)}), 200
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al actualizar el día: {e}")
             return jsonify({'msg': 'Error al actualizar el día', 'error': str(e)}), 500
 
     @staticmethod
@@ -334,6 +344,7 @@ class TripController:
             return jsonify({'msg': 'Día eliminado'}), 200
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al elimianr el día: {e}")
             return jsonify({'msg': 'Error al eliminar el día', 'error': str(e)}), 500
         
     @staticmethod
@@ -373,6 +384,7 @@ class TripController:
             return jsonify({'msg': 'Lugar añadido', 'place': place.serialize()}), 201
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al añadir el lugar: {e}")
             return jsonify({'msg': 'Error al añadir el lugar', 'error': str(e)}), 500
 
     @staticmethod
@@ -406,6 +418,7 @@ class TripController:
             return jsonify({'msg': 'Lugar actualizado', 'place': place.serialize()}), 200
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al actualizar el lugar: {e}")
             return jsonify({'msg': 'Error al actualizar el lugar', 'error': str(e)}), 500
 
     @staticmethod
@@ -428,4 +441,5 @@ class TripController:
             return jsonify({'msg': 'Lugar eliminado'}), 200
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al eliminar el lugar: {e}")
             return jsonify({'msg': 'Error al eliminar el lugar', 'error': str(e)}), 500

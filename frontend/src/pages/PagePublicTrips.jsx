@@ -1,9 +1,11 @@
 import { PublicTripsList } from '../modules/Trips/components/PublicTripsList';
 
-export const PagePublicTrips = () => {
+const PagePublicTrips = () => {
     return (
         <div className="container py-4">
             <PublicTripsList />
         </div>
     );
 };
+
+export default PagePublicTrips;

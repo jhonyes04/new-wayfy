@@ -77,6 +77,7 @@ class UserController:
             }), 201
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error registrando usuario: {e}")
             return jsonify({'msg': 'Error interno del servidor', 'error': str(e)}), 500
 
     @staticmethod
@@ -115,6 +116,7 @@ class UserController:
                 'users': [user.serialize() for user in users]
             }), 200
         except Exception as e:
+            current_app.logger.error(f"Error al obtener usuarios: {e}")
             return jsonify({'msg': 'Error al obtener usuarios', 'error': str(e)}), 500
         
     @staticmethod
@@ -176,6 +178,7 @@ class UserController:
                 
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al actualizar usuario: {e}")
             return jsonify({'msg': 'Error al actualizar usuario', 'error': str(e)}), 500
         
     @staticmethod
@@ -198,6 +201,7 @@ class UserController:
             return jsonify({'msg': 'Usuario eliminado correctamente'}), 200
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al eliminar usuario: {e}")
             return jsonify({'msg': 'Error al eliminar usuario', 'error': str(e)}), 500
     
     @staticmethod
@@ -249,6 +253,7 @@ class UserController:
         
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al procesar el reemplazo de archivo: {e}")
             return jsonify({'msg': 'Error al procesar el reemplazo del archivo', 'error': str(e)}), 500
         
     @staticmethod
@@ -304,6 +309,7 @@ class UserController:
             }), 201
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al agregar a favorito: {e}")
             return jsonify({'msg': 'Error al agregar favorito', 'error': str(e)}), 500
         
     @staticmethod
@@ -333,6 +339,7 @@ class UserController:
             }), 200
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Error al eliminar favorito: {e}")
             return jsonify({'msg': 'Error al eliminar favorito', 'error': str(e)}), 500
         
     @staticmethod
@@ -352,4 +359,5 @@ class UserController:
                 'favorites': [fav.serialize() for fav in favorites]
             }), 200
         except Exception as e:
+            current_app.logger.error(f"Error al obtener favoritos: {e}")
             return jsonify({'msg': 'Error al obtener favoritos', 'error': str(e)}), 500

@@ -1,21 +1,8 @@
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-const getAuthHeader = (token) => ({
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-});
-
-const handleResponse = async (response, message) => {
-    const contentType = response.headers.get('content-type') || '';
-    const isJson = contentType.includes('application/json');
-    const body = isJson
-        ? await response.json()
-        : { msg: `Error ${response.status} : ${response.statusText}` };
-
-    if (!response.ok) throw new Error(body.msg || message);
-
-    return body;
-};
+import {
+    API_BASE_URL,
+    getAuthHeader,
+    handleResponse,
+} from '../../../services/apiUtils';
 
 export const placesApi = {
     async createPlace(
@@ -45,12 +32,9 @@ export const placesApi = {
     },
 
     async getMyPending(token) {
-        const response = await fetch(
-            `${API_BASE_URL}/api/places/main/pending`,
-            {
-                headers: getAuthHeader(token),
-            },
-        );
+        const response = await fetch(`${API_BASE_URL}/api/places/pending`, {
+            headers: getAuthHeader(token),
+        });
 
         return handleResponse(
             response,

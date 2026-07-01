@@ -1,21 +1,8 @@
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-const getAuthHeader = (token) => ({
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-});
-
-const handleResponse = async (response) => {
-    const contentType = response.headers.get('content-type') || '';
-    const isJson = contentType.includes('application/json');
-    const body = isJson
-        ? await response.json()
-        : { msg: `Error ${response.status} : ${response.statusText}` };
-
-    if (!response.ok) throw new Error(body.msg || 'Error en la solicitud');
-
-    return body;
-};
+import {
+    API_BASE_URL,
+    getAuthHeader,
+    handleResponse,
+} from '../../../services/apiUtils';
 
 export const tripsApi = {
     async getMyTrips(token) {

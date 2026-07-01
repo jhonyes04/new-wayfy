@@ -223,7 +223,7 @@ export const AccessibilityEditor = ({ feature, onClose, onSaved }) => {
                                                 height: 70,
                                                 objectFit: 'cover',
                                                 borderRadius: 6,
-                                                pacity: 0.7,
+                                                opacity: 0.7,
                                                 border: '2px dashed #0d6efd',
                                                 cursor: 'pointer',
                                             }}
@@ -247,6 +247,7 @@ export const AccessibilityEditor = ({ feature, onClose, onSaved }) => {
                                                     handleDeletePhoto(photo.id)
                                                 }
                                                 title="Eliminar foto"
+                                                aria-label="Eliminar foto"
                                             >
                                                 <i className="fa-solid fa-xmark"></i>
                                             </button>
@@ -290,6 +291,7 @@ export const AccessibilityEditor = ({ feature, onClose, onSaved }) => {
                                                 handleRemoveNewPhoto(i)
                                             }
                                             title="Quitar foto"
+                                            aria-label="Quitar foto"
                                         >
                                             <i className="fa-solid fa-xmark"></i>
                                         </button>

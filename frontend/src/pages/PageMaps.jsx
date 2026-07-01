@@ -5,7 +5,7 @@ import { AccessibilityDetails } from '../modules/AccessibilityMap/components/Acc
 import { FilterPanel } from '../modules/FilterPanel/components/FilterPanel';
 import { useEffect } from 'react';
 
-export const PageMaps = () => {
+const PageMaps = () => {
     const { state, dispatch } = useGlobalReducer();
     const { places, selectedFeature } = state;
     const [showSidebar, setShowSidebar] = useState(true);
@@ -41,3 +41,5 @@ export const PageMaps = () => {
         </div>
     );
 };
+
+export default PageMaps;

@@ -14,7 +14,7 @@ import {
 import { tripsApi } from '../modules/Trips/services/trips.api';
 import { getCategoryStyle } from '../modules/AccessibilityMap/utils/translations/OSM_TRANSLATIONS';
 
-export const PagePublicTripDetail = () => {
+const PagePublicTripDetail = () => {
     const { tripId } = useParams();
     const [trip, setTrip] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -127,3 +127,5 @@ export const PagePublicTripDetail = () => {
         </Container>
     );
 };
+
+export default PagePublicTripDetail;
