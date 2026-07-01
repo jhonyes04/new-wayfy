@@ -1,26 +1,28 @@
-import { useState } from "react";
-import useGlobalReducer from "../hooks/useGlobalReducer";
-import { AccessibilityMap } from "../modules/AccessibilityMap/components/AccessibilityMap";
-import { AccessibilityDetails } from '../modules/AccessibilityMap/components/AccessibilityDetails'
-import { FilterPanel } from '../modules/FilterPanel/components/FilterPanel'
-import { useEffect } from "react";
+import { useState } from 'react';
+import useGlobalReducer from '../hooks/useGlobalReducer';
+import { AccessibilityMap } from '../modules/AccessibilityMap/components/AccessibilityMap';
+import { AccessibilityDetails } from '../modules/AccessibilityMap/components/AccessibilityDetails';
+import { FilterPanel } from '../modules/FilterPanel/components/FilterPanel';
+import { useEffect } from 'react';
 
 export const PageMaps = () => {
-    const { state, dispatch } = useGlobalReducer()
+    const { state, dispatch } = useGlobalReducer();
     const { places, selectedFeature } = state;
-    const [showSidebar, setShowSidebar] = useState(true)
+    const [showSidebar, setShowSidebar] = useState(true);
 
-    const handleToggleSidebar = () => setShowSidebar(!showSidebar)
+    const handleToggleSidebar = () => setShowSidebar(!showSidebar);
 
     const handleClose = () => {
-        dispatch({ type: 'SET_SELECTED_FEATURE', payload: null })
-    }
+        dispatch({ type: 'SET_SELECTED_FEATURE', payload: null });
+    };
 
     useEffect(() => {
-        const timeouts = [10, 150, 300].map((delay) => setTimeout(() => window.dispatchEvent(new Event('resize')), delay))
+        const timeouts = [10, 150, 300].map((delay) =>
+            setTimeout(() => window.dispatchEvent(new Event('resize')), delay),
+        );
 
-        return () => timeouts.forEach(clearTimeout)
-    }, [])
+        return () => timeouts.forEach(clearTimeout);
+    }, []);
 
     return (
         <div className="d-flex flex-grow-1 position-relative">
@@ -31,7 +33,10 @@ export const PageMaps = () => {
             <FilterPanel />
 
             {selectedFeature && (
-                <AccessibilityDetails feature={selectedFeature} onClose={handleClose} />
+                <AccessibilityDetails
+                    feature={selectedFeature}
+                    onClose={handleClose}
+                />
             )}
         </div>
     );

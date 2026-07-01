@@ -156,3 +156,12 @@ class AccessibilityController:
         
         return jsonify({'msg': 'Foto eliminada'}), 200
             
+    @staticmethod
+    def get_wheelchair_map():
+        rows = db.session.execute(
+            select(AccessibilityReview.osm_id, AccessibilityReview.wheelchair)
+        ).all()
+        
+        result = {r.osm_id: r.wheelchair for r in rows if r.wheelchair}
+        
+        return jsonify(result), 200

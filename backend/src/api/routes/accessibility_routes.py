@@ -4,6 +4,10 @@ from api.controllers.accessibility_controller import AccessibilityController
 
 accessibility_bp = Blueprint('accessibility_bp', __name__)
 
+@accessibility_bp.route('/wheelchair-map', methods=['GET'])
+def handle_wheelchair_map():
+    return AccessibilityController.get_wheelchair_map()
+
 @accessibility_bp.route('/<string:osm_id>', methods=['GET'])
 def handle_get(osm_id):
     return AccessibilityController.get_by_osm_id(osm_id)

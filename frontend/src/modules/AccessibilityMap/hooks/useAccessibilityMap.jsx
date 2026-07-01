@@ -3,6 +3,7 @@ import useGlobalReducer from '../../../hooks/useGlobalReducer';
 import useFilteredGeoJSON from './useFilteredGeoJSON';
 import { useCommunityPlaces } from './useCommunityPlaces';
 import { fetchWheelchairPlacesProgressive } from '../services/overpass.api';
+import { accessibilityApi } from '../services/accessibility.api';
 import { elementsToGeoJSON } from '../utils/toGeoJSON';
 
 const useAccessibilityMap = () => {
@@ -21,6 +22,7 @@ const useAccessibilityMap = () => {
     const [error, setError] = useState(null);
     const [cursor, setCursor] = useState('grab');
     const [customPin, setCustomPin] = useState(null);
+    const [communityWheelchairMap, setCommunityWheelchairMap] = useState({});
 
     const mapRef = useRef(null);
     const debounceRef = useRef(null);
@@ -33,6 +35,7 @@ const useAccessibilityMap = () => {
         geojson,
         activeFilters,
         activeCategories,
+        communityWheelchairMap,
     );
     const {
         approvedGeoJSON,
@@ -245,6 +248,19 @@ const useAccessibilityMap = () => {
         } else {
             setUserCoords({ longitude: 0, latitude: 0 });
         }
+    }, []);
+
+    useEffect(() => {
+        const loadMap = () => {
+            accessibilityApi
+                .getWheelchairMap()
+                .then(setCommunityWheelchairMap)
+                .catch(() => {});
+        };
+
+        loadMap();
+        window.addEventListener('wayfy:review-saved', loadMap);
+        return () => window.removeEventListener('wayfy:review-saved', loadMap);
     }, []);
 
     useEffect(() => {

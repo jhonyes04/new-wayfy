@@ -34,7 +34,7 @@ export const AccessibilityEditor = ({ feature, onClose, onSaved }) => {
     const properties = feature.properties;
     const osmId = String(properties.id);
 
-    const [wheelchair, setWheelchair] = useState(null);
+    const [wheelchair, setWheelchair] = useState(properties.wheelchair ?? null);
     const [details, setDetails] = useState({
         has_ramp: false,
         has_elevator: false,
