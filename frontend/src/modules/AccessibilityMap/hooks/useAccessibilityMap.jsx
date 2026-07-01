@@ -2,11 +2,13 @@ import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import useGlobalReducer from '../../../hooks/useGlobalReducer';
 import useFilteredGeoJSON from './useFilteredGeoJSON';
 import { useCommunityPlaces } from './useCommunityPlaces';
+import { useAuth } from '../../../context/auth/AuthContext';
 import { fetchWheelchairPlacesProgressive } from '../services/overpass.api';
 import { accessibilityApi } from '../services/accessibility.api';
 import { elementsToGeoJSON } from '../utils/toGeoJSON';
 
 const useAccessibilityMap = () => {
+    const { user } = useAuth();
     const { state, dispatch } = useGlobalReducer();
     const {
         viewState,
@@ -379,10 +381,13 @@ const useAccessibilityMap = () => {
             }
 
             dispatch({ type: 'SET_SELECTED_FEATURE', payload: null });
-            setCustomPin({
-                longitude: evt.lngLat.lng,
-                latitude: evt.lngLat.lat,
-            });
+
+            if (user) {
+                setCustomPin({
+                    longitude: evt.lngLat.lng,
+                    latitude: evt.lngLat.lat,
+                });
+            }
         },
         [dispatch],
     );
