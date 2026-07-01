@@ -32,7 +32,7 @@ const mobilityOptions = [
     { id: 'without', label: 'Sin limitaciones', icon: 'fa-check' },
 ];
 
-export const PageRegister = () => {
+const PageRegister = () => {
     const [formData, setFormData] = useState({
         firstname: '',
         lastname: '',
@@ -390,3 +390,5 @@ export const PageRegister = () => {
         </Container>
     );
 };
+
+export default PageRegister;

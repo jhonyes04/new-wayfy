@@ -2,6 +2,7 @@ import os
 import time
 from flask import jsonify, current_app
 from sqlalchemy import select, func
+from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 from api.models import db, AccessibilityReview, AccessibilityPhoto
 
@@ -18,8 +19,10 @@ class AccessibilityController:
     @staticmethod
     def get_by_osm_id(osm_id: str):
         reviews = db.session.execute(
-            select(AccessibilityReview).where(AccessibilityReview.osm_id == osm_id)
-        ).scalars().all()
+            select(AccessibilityReview)
+            .options(joinedload(AccessibilityReview.last_modified_by))
+            .where(AccessibilityReview.osm_id == osm_id)
+        ).scalars().unique().all()
 
         counts = {'yes': 0, 'limited': 0, 'no': 0}
         for r in reviews:

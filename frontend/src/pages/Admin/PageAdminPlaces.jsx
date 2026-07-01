@@ -1,3 +1,5 @@
 import { AdminPlaces } from '../../modules/Admin/components/AdminPlaces';
 
-export const PageAdminPlaces = () => <AdminPlaces />;
+const PageAdminPlaces = () => <AdminPlaces />;
+
+export default PageAdminPlaces;

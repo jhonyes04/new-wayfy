@@ -1,10 +1,12 @@
 import React from 'react';
 import { FavoritesList } from '../../modules/AccessibilityMap/components/FavoritesList';
 
-export const PageUserFavorites = () => {
+const PageUserFavorites = () => {
     return (
         <div>
             <FavoritesList />
         </div>
     );
 };
+
+export default PageUserFavorites;

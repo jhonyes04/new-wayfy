@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import imgLight from '../assets/img/portada.png';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 
-export const PageHome = () => {
+const PageHome = () => {
     return (
         <div className="w-100 bg-transparent">
             <main className="my-3">
@@ -69,8 +69,8 @@ export const PageHome = () => {
                                 <Button
                                     as={Link}
                                     to="/map"
-                                    variant='primary'
-                                    size='lg'
+                                    variant="primary"
+                                    size="lg"
                                     className="px-5 py-3 rounded-pill fw-bold shadow"
                                 >
                                     Empezar a explorar
@@ -92,3 +92,5 @@ export const PageHome = () => {
         </div>
     );
 };
+
+export default PageHome;

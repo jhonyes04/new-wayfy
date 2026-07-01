@@ -2,7 +2,7 @@ import os
 import json
 from urllib import request as urllib_request
 from urllib.parse import urlencode
-from flask import jsonify
+from flask import jsonify, current_app
 from groq import Groq
 from api.prompts.mapgpt_prompt import MAPGPT_SYSTEM_PROMPT
 
@@ -51,6 +51,7 @@ class AIController:
 
             return jsonify(ai_response), 200
         except Exception as e:
+            current_app.logger.error(f"Error procesando la petición IA: {e}")
             return jsonify({'msg': 'Error procesando la peticion de IA', 'error': str(e)}), 500
         
     @staticmethod
@@ -73,6 +74,7 @@ class AIController:
             with urllib_request.urlopen(req, timeout=5) as response:
                 results = json.loads(response.read().decode('utf-8'))
         except Exception as e:
+            current_app.logger.error(f"Error al geocodificar: {e}")
             return jsonify({'msg': 'Error al geocodificar', 'error': str(e)}), 502
         
         if not results: 

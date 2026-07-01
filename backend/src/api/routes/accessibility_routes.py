@@ -30,8 +30,8 @@ def handle_upload_photos(review_id):
 @accessibility_bp.route('/photos/<int:photo_id>', methods=['DELETE'])
 @jwt_required()
 def handle_delete_photo(photo_id):
-    curren_user_id = int(get_jwt_identity())
-    return AccessibilityController.delete_photo(photo_id, curren_user_id)
+    current_user_id = int(get_jwt_identity())
+    return AccessibilityController.delete_photo(photo_id, current_user_id)
 
 @accessibility_bp.route('/photos/<path:filename>', methods=['GET'])
 def handle_serve_photo(filename):

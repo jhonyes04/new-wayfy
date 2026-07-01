@@ -4,7 +4,7 @@ import useGlobalReducer from '../../hooks/useGlobalReducer';
 import { useTrips } from '../../modules/Trips/hooks/useTrips';
 import { StatCard } from '../../modules/UserDashboard/components/StatCard';
 
-export const PageUserHome = () => {
+const PageUserHome = () => {
     const { state } = useGlobalReducer();
     const { trips, loading: loadingTrips } = useTrips();
 
@@ -83,3 +83,5 @@ export const PageUserHome = () => {
         </Container>
     );
 };
+
+export default PageUserHome;

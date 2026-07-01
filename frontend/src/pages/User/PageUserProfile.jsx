@@ -64,7 +64,7 @@ const mobilityOptions = [
     { id: 'without', label: 'Sin limitaciones', icon: 'fa-check' },
 ];
 
-export const PageUserProfile = () => {
+const PageUserProfile = () => {
     const { user, token, updateUserContext } = useAuth();
     const fileInputRef = useRef(null);
 
@@ -352,3 +352,5 @@ export const PageUserProfile = () => {
         </Container>
     );
 };
+
+export default PageUserProfile;

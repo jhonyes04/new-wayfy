@@ -250,7 +250,7 @@ const useAccessibilityMap = () => {
         } else {
             setUserCoords({ longitude: 0, latitude: 0 });
         }
-    }, []);
+    }, [selectedLocation]);
 
     useEffect(() => {
         const loadMap = () => {
@@ -313,9 +313,10 @@ const useAccessibilityMap = () => {
 
     const handleMoveEnd = useCallback(() => {
         if (!isPositionReady) return;
+
         clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => loadData(), 300);
-    }, [loadData, loadCommunity, isPositionReady]);
+    }, [loadData, isPositionReady]);
 
     const handleClick = useCallback(
         (evt) => {

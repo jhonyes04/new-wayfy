@@ -3,7 +3,7 @@ import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import ScrollToTop from '../components/ScrollToTop';
 
-export const PageLayout = () => {
+const PageLayout = () => {
     return (
         <ScrollToTop>
             <div className="d-flex flex-column min-vh-100">
@@ -16,3 +16,5 @@ export const PageLayout = () => {
         </ScrollToTop>
     );
 };
+
+export default PageLayout;

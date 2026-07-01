@@ -92,11 +92,15 @@ export const TripCard = ({
                 >
                     <div>
                         <i className="fa-solid fa-user me-1"></i>
-                        {trip?.author.firstname} {trip?.author.lastname}
+                        {trip?.author?.firstname} {trip?.author.lastname}
                     </div>
                     <div className="ms-auto">
                         <i className="fa-regular fa-clock me-1"></i>
-                        {new Date(trip.updated_at).toLocaleDateString('es-ES')}
+                        {new Date(trip.updated_at).toLocaleDateString('es-ES', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                        })}
                     </div>
                 </Badge>
             </Card.Body>

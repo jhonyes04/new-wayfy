@@ -26,5 +26,5 @@ class Place(db.Model):
             'place_label': self.place_label,
             'created_by': self.created_by,
             'status': self.status,
-            'created_at': self.created_at
+            'created_at': self.created_at.isoformat() if self.created_at else None
         }

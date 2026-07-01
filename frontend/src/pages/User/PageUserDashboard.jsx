@@ -13,13 +13,13 @@ import { UserAvatar } from '../../modules/UserDashboard/components/UserAvatar';
 import { useAuth } from '../../context/auth/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SidebarContent } from '../../modules/UserDashboard/components/SidebarContent';
-import { PageUserProfile } from './PageUserProfile';
-import { PageUserFavorites } from './PageUserFavorites';
-import { PageUserTrips } from './PageUserTrips';
+import PageUserHome from './PageUserHome';
+import PageUserProfile from './PageUserProfile';
+import PageUserFavorites from './PageUserFavorites';
+import PageUserTrips from './PageUserTrips';
 import { TripDetail } from '../../modules/Trips/components/TripDetail';
-import { PageUserHome } from './PageUserHome';
 
-export const PageUserDashboard = () => {
+const PageUserDashboard = () => {
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'dashboard';
@@ -119,3 +119,5 @@ export const PageUserDashboard = () => {
         </div>
     );
 };
+
+export default PageUserDashboard;

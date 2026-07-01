@@ -1,5 +1,6 @@
 import os
-from flask import Blueprint, request, send_from_directory
+from werkzeug.utils import secure_filename as _secure_filename
+from flask import Blueprint, request, send_from_directory, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from api.controllers.user_controller import UserController
 
@@ -116,5 +117,10 @@ def handle_update_avatar():
 @user_bp.route('/avatar/<path:filename>', methods=['GET'])
 @jwt_required()
 def serve_avatar(filename):
+    safe_name = _secure_filename(filename)
+    
+    if not safe_name or safe_name != filename:
+        return jsonify({'msg': 'Nombre de archivo no válido'}), 400
+    
     avatar_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../public/avatar')
     return send_from_directory(avatar_dir, filename)
